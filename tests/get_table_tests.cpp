@@ -49,6 +49,34 @@ using namespace fc;
 
 BOOST_AUTO_TEST_SUITE(get_table_tests)
 
+transaction_trace_ptr
+issue_tokens( TESTER& t, account_name issuer, account_name to, const asset& amount,
+              std::string memo = "", account_name token_contract = N(ecrio.token) )
+{
+   signed_transaction trx;
+
+   trx.actions.emplace_back( t.get_action( token_contract, N(issue),
+                                           vector<permission_level>{{issuer, config::active_name}},
+                                           mutable_variant_object()
+                                             ("to", issuer.to_string())
+                                             ("quantity", amount)
+                                             ("memo", memo)
+   ) );
+
+   trx.actions.emplace_back( t.get_action( token_contract, N(transfer),
+                                           vector<permission_level>{{issuer, config::active_name}},
+                                           mutable_variant_object()
+                                             ("from", issuer.to_string())
+                                             ("to", to.to_string())
+                                             ("quantity", amount)
+                                             ("memo", memo)
+   ) );
+
+   t.set_transaction_headers(trx);
+   trx.sign( t.get_private_key( issuer, "active" ), t.control->get_chain_id()  );
+   return t.push_transaction( trx );
+}
+
 BOOST_FIXTURE_TEST_CASE( get_scope_test, TESTER ) try {
    produce_blocks(2);
 
@@ -76,22 +104,12 @@ BOOST_FIXTURE_TEST_CASE( get_scope_test, TESTER ) try {
 
    // issue
    for (account_name a: accs) {
-      push_action( N(ecrio.token), N(issue), "ecrio", mutable_variant_object()
-                  ("to",      name(a) )
-                  ("quantity", eosio::chain::asset::from_string("999.0000 SYS") )
-                  ("memo", "")
-                  );
+      issue_tokens( *this, config::system_account_name, a, eosio::chain::asset::from_string("999.0000 SYS") );
    }
    produce_blocks(1);
 
-   // iterate over scope
-// <<<<<<< HEAD
-//    eosio::chain_apis::read_only plugin(*(this->control), fc::microseconds(INT_MAX));
-//    eosio::chain_apis::read_only::get_table_by_scope_params param{N(ecrio.token), N(accounts), "inita", "", 10};
-// =======
    eosio::chain_apis::read_only plugin(*(this->control), fc::microseconds::maximum());
    eosio::chain_apis::read_only::get_table_by_scope_params param{N(ecrio.token), N(accounts), "inita", "", 10};
-// >>>>>>> 14a65aca147edf51fd86a958949e237fd430b9ed
    eosio::chain_apis::read_only::get_table_by_scope_result result = plugin.read_only::get_table_by_scope(param);
 
    BOOST_REQUIRE_EQUAL(4u, result.rows.size());
@@ -167,11 +185,7 @@ BOOST_FIXTURE_TEST_CASE( get_table_test, TESTER ) try {
 
    // issue
    for (account_name a: accs) {
-      push_action( N(ecrio.token), N(issue), "ecrio", mutable_variant_object()
-                  ("to",      name(a) )
-                  ("quantity", eosio::chain::asset::from_string("10000.0000 SYS") )
-                  ("memo", "")
-                  );
+      issue_tokens( *this, config::system_account_name, a, eosio::chain::asset::from_string("10000.0000 SYS") );
    }
    produce_blocks(1);
 
@@ -182,11 +196,7 @@ BOOST_FIXTURE_TEST_CASE( get_table_test, TESTER ) try {
    push_action(N(ecrio.token), N(create), N(ecrio.token), act );
    // issue
    for (account_name a: accs) {
-      push_action( N(ecrio.token), N(issue), "ecrio", mutable_variant_object()
-                  ("to",      name(a) )
-                  ("quantity", eosio::chain::asset::from_string("9999.0000 AAA") )
-                  ("memo", "")
-                  );
+      issue_tokens( *this, config::system_account_name, a, eosio::chain::asset::from_string("9999.0000 AAA") );
    }
    produce_blocks(1);
 
@@ -197,11 +207,7 @@ BOOST_FIXTURE_TEST_CASE( get_table_test, TESTER ) try {
    push_action(N(ecrio.token), N(create), N(ecrio.token), act );
    // issue
    for (account_name a: accs) {
-      push_action( N(ecrio.token), N(issue), "ecrio", mutable_variant_object()
-                  ("to",      name(a) )
-                  ("quantity", eosio::chain::asset::from_string("7777.0000 CCC") )
-                  ("memo", "")
-                  );
+      issue_tokens( *this, config::system_account_name, a, eosio::chain::asset::from_string("7777.0000 CCC") );
    }
    produce_blocks(1);
 
@@ -212,11 +218,7 @@ BOOST_FIXTURE_TEST_CASE( get_table_test, TESTER ) try {
    push_action(N(ecrio.token), N(create), N(ecrio.token), act );
    // issue
    for (account_name a: accs) {
-      push_action( N(ecrio.token), N(issue), "ecrio", mutable_variant_object()
-                  ("to",      name(a) )
-                  ("quantity", eosio::chain::asset::from_string("8888.0000 BBB") )
-                  ("memo", "")
-                  );
+      issue_tokens( *this, config::system_account_name, a, eosio::chain::asset::from_string("8888.0000 BBB") );
    }
    produce_blocks(1);
 
@@ -367,22 +369,13 @@ BOOST_FIXTURE_TEST_CASE( get_table_by_seckey_test, TESTER ) try {
 
    // issue
    for (account_name a: accs) {
-      push_action( N(ecrio.token), N(issue), "ecrio", mutable_variant_object()
-                  ("to",      name(a) )
-                  ("quantity", eosio::chain::asset::from_string("10000.0000 SYS") )
-                  ("memo", "")
-                  );
+      issue_tokens( *this, config::system_account_name, a, eosio::chain::asset::from_string("10000.0000 SYS") );
    }
    produce_blocks(1);
-// <<<<<<< HEAD
 
-//    set_code( config::system_account_name, ecrio_system_wast );
-//    set_abi( config::system_account_name, ecrio_system_abi );
-// =======
-   
    set_code( config::system_account_name, contracts::ecrio_system_wasm() );
    set_abi( config::system_account_name, contracts::ecrio_system_abi().data() );
-   
+
    base_tester::push_action(config::system_account_name, N(init),
                             config::system_account_name,  mutable_variant_object()
                             ("version", 0)

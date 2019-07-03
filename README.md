@@ -3,17 +3,20 @@
 
 #### ECRIO Setting
 ```sh
-$ git clone https://github.com/eoschrome/ECRIO --recursive
-$ cd ECRIO/scripts
-$ sudo ./ecrio_build -s "SYSTEM TOKEN NAME"
-$ sudo ./ecrio_install
+$ git clone https://github.com/ibct-dev/ECRIO --recursive
+$ cd ECRIO
+$ sudo ./scripts/ecrio_build -s "SYSTEM TOKEN NAME"
+$ sudo ./scripts/ecrio_install
+```
 
 ## Supported Operating Systems
 ECRIO currently supports the following operating systems:  
-1. Amazon 2017.09 and higher
-2. Centos 7
+1. Amazon Linux 2
+2. CentOS 7
+3. Ubuntu 18.04
+4. MacOS 10.14 (Mojave)
 
-```
+
 
 #### ECRIO features
 

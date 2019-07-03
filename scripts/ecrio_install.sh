@@ -1,85 +1,38 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -eo pipefail
+VERSION=2.0
 
-##########################################################################
-# This is the ECRIO automated install script for Linux and Mac OS.
-# This file was downloaded from https://github.com/EOSCHROME/ECRIO
-# Modified version of: https://github.com/EOSIO/EOS
-#
-# Original work Copyright (c) 2017, Respective Authors all rights reserved.
-# Modified work Copyright (c) 2019, EOSCHROME of IBCT.
-#
-# After June 1, 2018 this software is available under the following terms:
-#
-# The MIT License
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-#
-##########################################################################
+# Load eosio specific helper functions
+. ./scripts/helpers/eosio.sh
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="${SCRIPT_DIR}/.."
-BUILD_DIR="${REPO_ROOT}/build"
+[[ ! $NAME == "Ubuntu" ]] && set -i # Ubuntu doesn't support interactive mode since it uses dash
 
-OPT_LOCATION=$HOME/opt
-BIN_LOCATION=$HOME/bin
-LIB_LOCATION=$HOME/lib
-mkdir -p $LIB_LOCATION
+[[ ! -d $BUILD_DIR ]] && printf "${COLOR_RED}Please run ./ecrio_build.sh first!${COLOR_NC}" && exit 1
+echo "${COLOR_CYAN}====================================================================================="
+echo "========================== ${COLOR_WHITE}Starting ECRIO Installation${COLOR_CYAN} ==============================${COLOR_NC}"
+execute cd $BUILD_DIR
+execute make install
+execute cd ..
 
-CMAKE_BUILD_TYPE=Release
-TIME_BEGIN=$(date -u +%s)
-INSTALL_PREFIX=$OPT_LOCATION/eosio
-VERSION=1.2
+echo ""
+echo "    ${COLOR_RED}███████╗ ██████╗██████╗ ██╗ ██████╗ "
+echo "    ${COLOR_RED}██╔════╝██╔════╝██╔══██╗██║██╔═══██╗"
+echo "    ${COLOR_RED}█████╗  ██║     ██████╔╝██║██║   ██║"
+echo "    ${COLOR_RED}██╔══╝  ██║     ██╔══██╗██║██║   ██║"
+echo "    ${COLOR_RED}███████╗╚██████╗██║  ██║██║╚██████╔╝"
+echo "    ${COLOR_RED}╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ "
+echo ""
 
-txtbld=$(tput bold)
-bldred=${txtbld}$(tput setaf 1)
-txtrst=$(tput sgr0)
+echo "==============================================================================================${COLOR_NC}"
+echo "${COLOR_GREEN}ECRIO has been installed into ${EOSIO_INSTALL_DIR}/bin${COLOR_NC}"
+echo "${COLOR_YELLOW}Uninstall with: ./scripts/ecrio_uninstall.sh${COLOR_NC}"
+echo "==============================================================================================${COLOR_NC}"
 
-if [ ! -d $BUILD_DIR ]; then
-    printf "\\nError, ecrio_build.sh has not ran.  Please run ./ecrio_build.sh first!\\n\\n"
-    exit -1
-fi
+echo ""
 
-if ! pushd "${BUILD_DIR}" &>/dev/null; then
-    printf "Unable to enter build directory %s.\\n Exiting now.\\n" "${BUILD_DIR}"
-    exit 1
-fi
+echo "${COLOR_BLUE}For more information:${COLOR_NC}"
+echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io${COLOR_NC}"
+echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome${COLOR_NC}"
+echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome${COLOR_NC}"
 
-if ! make install; then
-    printf "\\nMAKE installing ECRIO has exited with the above error.\\n\\n"
-    exit -1
-fi
-popd &>/dev/null
-
-printf "\n\n${bldred}"
-printf "\t███████╗ ██████╗██████╗ ██╗ ██████╗ \n"
-printf "\t██╔════╝██╔════╝██╔══██╗██║██╔═══██╗\n"
-printf "\t█████╗  ██║     ██████╔╝██║██║   ██║\n"
-printf "\t██╔══╝  ██║     ██╔══██╗██║██║   ██║\n"
-printf "\t███████╗╚██████╗██║  ██║██║╚██████╔╝\n"
-printf "\t╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ \n"
-printf "${txtrst}"
-
-printf "==============================================================================================\\n"
-printf "ECRIO has been installed into ${OPT_LOCATION}/eosio/bin!\\n"
-printf "If you need to, you can fully uninstall using ecrio_uninstall.sh\\n"
-printf "==============================================================================================\\n\\n"
-
-printf "EOS Chrome website: https://kr.eoschrome.io\\n"
-printf "EOS Chrome medium: https://medium.com/eoschrome\\n"
-printf "EOS Chrome Telegram channel: https://t.me/eos_chrome\\n"
+echo ""

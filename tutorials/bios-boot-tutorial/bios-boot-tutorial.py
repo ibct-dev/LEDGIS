@@ -26,6 +26,7 @@ systemAccounts = [
     'ecrio.stake',
     'ecrio.token',
     'ecrio.vpay',
+    'ecrio.rex',
 ]
 
 def jsonArg(a):
