@@ -15,22 +15,22 @@ execute make install
 execute cd ..
 
 echo ""
-echo "    ${COLOR_RED}███████╗ ██████╗██████╗ ██╗ ██████╗ \n"
-echo "    ${COLOR_RED}██╔════╝██╔════╝██╔══██╗██║██╔═══██╗\n"
-echo "    ${COLOR_RED}█████╗  ██║     ██████╔╝██║██║   ██║\n"
-echo "    ${COLOR_RED}██╔══╝  ██║     ██╔══██╗██║██║   ██║\n"
-echo "    ${COLOR_RED}███████╗╚██████╗██║  ██║██║╚██████╔╝\n"
-echo "    ${COLOR_RED}╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ \n"
+echo "    ${COLOR_RED}███████╗ ██████╗██████╗ ██╗ ██████╗ "
+echo "    ${COLOR_RED}██╔════╝██╔════╝██╔══██╗██║██╔═══██╗"
+echo "    ${COLOR_RED}█████╗  ██║     ██████╔╝██║██║   ██║"
+echo "    ${COLOR_RED}██╔══╝  ██║     ██╔══██╗██║██║   ██║"
+echo "    ${COLOR_RED}███████╗╚██████╗██║  ██║██║╚██████╔╝"
+echo "    ${COLOR_RED}╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ "
 echo ""
 
 echo "==============================================================================================${COLOR_NC}"
 echo "${COLOR_GREEN}ECRIO has been installed into ${EOSIO_INSTALL_DIR}/bin${COLOR_NC}"
-echo "\\n${COLOR_YELLOW}Uninstall with: ./scripts/ecrio_uninstall.sh${COLOR_NC}\\n"
+echo "${COLOR_YELLOW}Uninstall with: ./scripts/ecrio_uninstall.sh${COLOR_NC}"
 echo "==============================================================================================${COLOR_NC}"
 echo ""
 
-echo "${COLOR_BLUE}For more information:\\n"
-echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io\\n"
-echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome\\n"
-echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome\\n"
+echo "${COLOR_BLUE}For more information:"
+echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io"
+echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome"
+echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome"
 resources

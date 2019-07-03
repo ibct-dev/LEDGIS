@@ -187,12 +187,12 @@ execute cd $REPO_ROOT 1>/dev/null
 TIME_END=$(($(date -u +%s) - $TIME_BEGIN))
 
 echo ""
-echo "    ${COLOR_RED}███████╗ ██████╗██████╗ ██╗ ██████╗ \n"
-echo "    ${COLOR_RED}██╔════╝██╔════╝██╔══██╗██║██╔═══██╗\n"
-echo "    ${COLOR_RED}█████╗  ██║     ██████╔╝██║██║   ██║\n"
-echo "    ${COLOR_RED}██╔══╝  ██║     ██╔══██╗██║██║   ██║\n"
-echo "    ${COLOR_RED}███████╗╚██████╗██║  ██║██║╚██████╔╝\n"
-echo "    ${COLOR_RED}╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ \n"
+echo "    ${COLOR_RED}███████╗ ██████╗██████╗ ██╗ ██████╗ "
+echo "    ${COLOR_RED}██╔════╝██╔════╝██╔══██╗██║██╔═══██╗"
+echo "    ${COLOR_RED}█████╗  ██║     ██████╔╝██║██║   ██║"
+echo "    ${COLOR_RED}██╔══╝  ██║     ██╔══██╗██║██║   ██║"
+echo "    ${COLOR_RED}███████╗╚██████╗██║  ██║██║╚██████╔╝"
+echo "    ${COLOR_RED}╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ "
 echo ""
 
 echo "${COLOR_GREEN}ECRIO has been successfully built. $(($TIME_END/3600)):$(($TIME_END%3600/60)):$(($TIME_END%60))"
@@ -209,8 +209,8 @@ echo "cd ./build &&${PATH_TO_USE} make test" # PATH is set as currently 'mongo' 
 
 echo ""
 
-echo "${COLOR_BLUE}For more information:\\n"
-echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io\\n"
-echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome\\n"
-echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome\\n"
+echo "${COLOR_BLUE}For more information:"
+echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io"
+echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome"
+echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome"
 resources
