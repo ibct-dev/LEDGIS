@@ -213,10 +213,10 @@ BOOST_FIXTURE_TEST_CASE( bootseq_test, bootseq_tester ) {
         set_privileged(N(ecrio.token));
 
         // Verify ecrio.msig and ecrio.token is privileged
-        const auto& eosio_msig_acc = get<account_object, by_name>(N(ecrio.msig));
-        BOOST_TEST(eosio_msig_acc.privileged == true);
-        const auto& eosio_token_acc = get<account_object, by_name>(N(ecrio.token));
-        BOOST_TEST(eosio_token_acc.privileged == true);
+        const auto& ecrio_msig_acc = get<account_object, by_name>(N(ecrio.msig));
+        BOOST_TEST(ecrio_msig_acc.is_privileged() == true);
+        const auto& ecrio_token_acc = get<account_object, by_name>(N(ecrio.token));
+        BOOST_TEST(ecrio_token_acc.is_privileged() == true);
 
 
         // Create SYS tokens in ecrio.token, set its manager as ecrio
