@@ -209,8 +209,10 @@ echo "cd ./build &&${PATH_TO_USE} make test" # PATH is set as currently 'mongo' 
 
 echo ""
 
-echo "${COLOR_BLUE}For more information:"
-echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io"
-echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome"
-echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome"
+echo "${COLOR_BLUE}For more information:${COLOR_NC}"
+echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io${COLOR_NC}"
+echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome${COLOR_NC}"
+echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome${COLOR_NC}"
+
+echo ""
 resources

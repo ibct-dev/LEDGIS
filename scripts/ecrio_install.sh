@@ -27,10 +27,13 @@ echo "==========================================================================
 echo "${COLOR_GREEN}ECRIO has been installed into ${EOSIO_INSTALL_DIR}/bin${COLOR_NC}"
 echo "${COLOR_YELLOW}Uninstall with: ./scripts/ecrio_uninstall.sh${COLOR_NC}"
 echo "==============================================================================================${COLOR_NC}"
+
 echo ""
 
-echo "${COLOR_BLUE}For more information:"
-echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io"
-echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome"
-echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome"
+echo "${COLOR_BLUE}For more information:${COLOR_NC}"
+echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io${COLOR_NC}"
+echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome${COLOR_NC}"
+echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome${COLOR_NC}"
+
+echo ""
 resources
