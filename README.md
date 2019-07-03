@@ -4,9 +4,9 @@
 #### ECRIO Setting
 ```sh
 $ git clone https://github.com/eoschrome/ECRIO --recursive
-$ cd ECRIO/scripts
-$ sudo ./ecrio_build -s "SYSTEM TOKEN NAME"
-$ sudo ./ecrio_install
+$ cd ECRIO
+$ sudo ./scripts/ecrio_build -s "SYSTEM TOKEN NAME"
+$ sudo ./scripts/ecrio_install
 
 ## Supported Operating Systems
 ECRIO currently supports the following operating systems:  
