@@ -213,9 +213,9 @@ BOOST_FIXTURE_TEST_CASE( bootseq_test, bootseq_tester ) {
         set_privileged(N(ecrio.token));
 
         // Verify ecrio.msig and ecrio.token is privileged
-        const auto& ecrio_msig_acc = get<account_object, by_name>(N(ecrio.msig));
+        const auto& ecrio_msig_acc = get<account_metadata_object, by_name>(N(ecrio.msig));
         BOOST_TEST(ecrio_msig_acc.is_privileged() == true);
-        const auto& ecrio_token_acc = get<account_object, by_name>(N(ecrio.token));
+        const auto& ecrio_token_acc = get<account_metadata_object, by_name>(N(ecrio.token));
         BOOST_TEST(ecrio_token_acc.is_privileged() == true);
 
 
