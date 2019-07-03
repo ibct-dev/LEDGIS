@@ -186,14 +186,14 @@ execute cd $REPO_ROOT 1>/dev/null
 
 TIME_END=$(($(date -u +%s) - $TIME_BEGIN))
 
-printf "\n\n${bldred}"
-printf "\t███████╗ ██████╗██████╗ ██╗ ██████╗ \n"
-printf "\t██╔════╝██╔════╝██╔══██╗██║██╔═══██╗\n"
-printf "\t█████╗  ██║     ██████╔╝██║██║   ██║\n"
-printf "\t██╔══╝  ██║     ██╔══██╗██║██║   ██║\n"
-printf "\t███████╗╚██████╗██║  ██║██║╚██████╔╝\n"
-printf "\t╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ \n"
-printf "${txtrst}"
+echo ""
+echo "    ${COLOR_RED}███████╗ ██████╗██████╗ ██╗ ██████╗ \n"
+echo "    ${COLOR_RED}██╔════╝██╔════╝██╔══██╗██║██╔═══██╗\n"
+echo "    ${COLOR_RED}█████╗  ██║     ██████╔╝██║██║   ██║\n"
+echo "    ${COLOR_RED}██╔══╝  ██║     ██╔══██╗██║██║   ██║\n"
+echo "    ${COLOR_RED}███████╗╚██████╗██║  ██║██║╚██████╔╝\n"
+echo "    ${COLOR_RED}╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ \n"
+echo ""
 
 echo "${COLOR_GREEN}ECRIO has been successfully built. $(($TIME_END/3600)):$(($TIME_END%3600/60)):$(($TIME_END%60))"
 echo "${COLOR_GREEN}You can now install using: ./scripts/ecrio_install.sh${COLOR_NC}"
@@ -209,7 +209,8 @@ echo "cd ./build &&${PATH_TO_USE} make test" # PATH is set as currently 'mongo' 
 
 echo ""
 
-printf "For more information:\\n"
-printf "EOS Chrome website: https://kr.eoschrome.io\\n"
-printf "EOS Chrome medium: https://medium.com/eoschrome\\n"
-printf "EOS Chrome Telegram channel: https://t.me/eos_chrome\\n"
+echo "${COLOR_BLUE}For more information:\\n"
+echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io\\n"
+echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome\\n"
+echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome\\n"
+resources

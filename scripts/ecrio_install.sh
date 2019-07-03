@@ -14,21 +14,23 @@ execute cd $BUILD_DIR
 execute make install
 execute cd ..
 
-printf "\n\n${bldred}"
-printf "\t███████╗ ██████╗██████╗ ██╗ ██████╗ \n"
-printf "\t██╔════╝██╔════╝██╔══██╗██║██╔═══██╗\n"
-printf "\t█████╗  ██║     ██████╔╝██║██║   ██║\n"
-printf "\t██╔══╝  ██║     ██╔══██╗██║██║   ██║\n"
-printf "\t███████╗╚██████╗██║  ██║██║╚██████╔╝\n"
-printf "\t╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ \n"
-printf "${txtrst}"
+echo ""
+echo "    ${COLOR_RED}███████╗ ██████╗██████╗ ██╗ ██████╗ \n"
+echo "    ${COLOR_RED}██╔════╝██╔════╝██╔══██╗██║██╔═══██╗\n"
+echo "    ${COLOR_RED}█████╗  ██║     ██████╔╝██║██║   ██║\n"
+echo "    ${COLOR_RED}██╔══╝  ██║     ██╔══██╗██║██║   ██║\n"
+echo "    ${COLOR_RED}███████╗╚██████╗██║  ██║██║╚██████╔╝\n"
+echo "    ${COLOR_RED}╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ \n"
+echo ""
 
-printf "==============================================================================================\\n"
-printf "${COLOR_GREEN}ECRIO has been installed into ${EOSIO_INSTALL_DIR}/bin${COLOR_NC}"
-printf "\\n${COLOR_YELLOW}Uninstall with: ./scripts/ecrio_uninstall.sh${COLOR_NC}\\n"
-printf "==============================================================================================\\n\\n"
+echo "==============================================================================================${COLOR_NC}"
+echo "${COLOR_GREEN}ECRIO has been installed into ${EOSIO_INSTALL_DIR}/bin${COLOR_NC}"
+echo "\\n${COLOR_YELLOW}Uninstall with: ./scripts/ecrio_uninstall.sh${COLOR_NC}\\n"
+echo "==============================================================================================${COLOR_NC}"
+echo ""
+
+echo "${COLOR_BLUE}For more information:\\n"
+echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io\\n"
+echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome\\n"
+echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome\\n"
 resources
-
-printf "EOS Chrome website: https://kr.eoschrome.io\\n"
-printf "EOS Chrome medium: https://medium.com/eoschrome\\n"
-printf "EOS Chrome Telegram channel: https://t.me/eos_chrome\\n"
