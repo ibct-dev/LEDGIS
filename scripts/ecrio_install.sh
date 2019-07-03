@@ -36,4 +36,3 @@ echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome${COLOR_NC}"
 echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome${COLOR_NC}"
 
 echo ""
-resources
