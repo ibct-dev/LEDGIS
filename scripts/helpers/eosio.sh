@@ -53,8 +53,10 @@ function setup() {
     execute mkdir -p $VAR_DIR/log
     execute mkdir -p $ETC_DIR
     execute mkdir -p $LIB_DIR
-    execute mkdir -p $MONGODB_LOG_DIR
-    execute mkdir -p $MONGODB_DATA_DIR
+    if $ENABLE_MONGO; then
+        execute mkdir -p $MONGODB_LOG_DIR
+        execute mkdir -p $MONGODB_DATA_DIR
+    fi
 }
 
 function ensure-which() {
@@ -92,7 +94,9 @@ function install-directory-prompt() {
       esac
     done
   else
-    export EOSIO_INSTALL_DIR=${INSTALL_LOCATION}
+    # Support relative paths : https://github.com/EOSIO/eos/issues/7560
+    [[ ! $INSTALL_LOCATION =~ ^\/ ]] && export INSTALL_LOCATION="${CURRENT_WORKING_DIR}/$INSTALL_LOCATION"
+    export EOSIO_INSTALL_DIR="$INSTALL_LOCATION"
   fi
   . ./scripts/.build_vars
   echo "ECRIO will be installed to: ${EOSIO_INSTALL_DIR}"
