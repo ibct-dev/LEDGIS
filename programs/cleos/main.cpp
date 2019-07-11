@@ -980,7 +980,6 @@ CLI::callback_t obsoleted_option_host_port = [](CLI::results_t) {
 struct register_producer_subcommand {
    string producer_str;
    string producer_key_str;
-   string contract_str;
    string transfer_ratio;
    string url;
    uint16_t loc = 0;
@@ -989,9 +988,8 @@ struct register_producer_subcommand {
 
    register_producer_subcommand(CLI::App* actionRoot) {
       auto register_producer = actionRoot->add_subcommand("regproducer", localized("Register a new producer"));
-      register_producer->add_option("account", producer_str, localized("The account to register as a producer"))->required();
+      register_producer->add_option("account", producer_str, localized("The account to register as a producer(The producer's dapp token contract)"))->required();
       register_producer->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
-      register_producer->add_option("contract", contract_str, localized("The producer's dapp token contract"))->required();
       register_producer->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
       register_producer->add_option("url", url, localized("url where info about producer can be found"), true);
       register_producer->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
@@ -1007,7 +1005,6 @@ struct register_producer_subcommand {
          fc::variant regprod_var = fc::mutable_variant_object()
                   ("producer", producer_str)
                   ("producer_key", producer_key)
-                  ("contract", contract_str)
                   ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio))
                   ("url", url)
                   ("location", loc)
@@ -1155,25 +1152,22 @@ struct unregister_producer_subcommand {
    }
 };
 
-struct change_token_subcommand {
+struct change_ratio_subcommand {
    string producer_str;
-   string contract_str;
    string transfer_ratio;
 
-   change_token_subcommand(CLI::App* actionRoot) {
-      auto change_token = actionRoot->add_subcommand("changetoken", localized("change producer dapp token"));
-      change_token->add_option("account", producer_str, localized("The producer's account"))->required();
-      change_token->add_option("contract", contract_str, localized("The producer's dapp token contract"))->required();
-      change_token->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
-      add_standard_transaction_options(change_token, "account@active");
+   change_ratio_subcommand(CLI::App* actionRoot) {
+      auto change_ratio = actionRoot->add_subcommand("changeratio", localized("change producer dapp token"));
+      change_ratio->add_option("account", producer_str, localized("The producer's account(The producer's dapp token contract)"))->required();
+      change_ratio->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
+      add_standard_transaction_options(change_ratio, "account@active");
 
-      change_token->set_callback([this] {
+      change_ratio->set_callback([this] {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("producer", producer_str)
-                  ("contract", contract_str)
                   ("transfer_ratio", transfer_ratio);
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
-         send_actions({create_action(accountPermissions, config::system_account_name, N(changetoken), act_payload)});
+         send_actions({create_action(accountPermissions, config::system_account_name, N(changeratio), act_payload)});
       });
    }
 };
@@ -4213,7 +4207,7 @@ int main( int argc, char** argv ) {
    auto registerProducer = register_producer_subcommand(system);
    // auto updateProducer = update_producer_subcommand(system);
    auto unregisterProducer = unregister_producer_subcommand(system);
-   auto changetoken = change_token_subcommand(system);
+   auto changeratio = change_ratio_subcommand(system);
 
    auto voteProducer = system->add_subcommand("voteproducer", localized("Vote for a producer"));
    voteProducer->require_subcommand();
