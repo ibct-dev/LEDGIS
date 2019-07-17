@@ -1932,12 +1932,12 @@ struct regproxy_subcommand {
       register_proxy->set_callback([this] {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("proxy", proxy)
-                  ("name", true)
-                  ("slogan", true)
-                  ("philosophy", true)
-                  ("background", true)
-                  ("website", true)
-                  ("logo_256", true);
+                  ("name", name)
+                  ("slogan", slogan)
+                  ("philosophy", philosophy)
+                  ("background", background)
+                  ("website", website)
+                  ("logo_256", logo_256);
          auto accountPermissions = get_account_permissions(tx_permission, {proxy,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproxy), act_payload)});
       });
