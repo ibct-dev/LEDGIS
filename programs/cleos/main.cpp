@@ -1165,7 +1165,7 @@ struct change_ratio_subcommand {
       change_ratio->set_callback([this] {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("producer", producer_str)
-                  ("transfer_ratio", transfer_ratio);
+                  ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio));
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(changeratio), act_payload)});
       });
