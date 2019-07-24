@@ -1956,7 +1956,7 @@ struct unregproxy_subcommand {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("proxy", proxy);
          auto accountPermissions = get_account_permissions(tx_permission, {proxy,config::active_name});
-         send_actions({create_action(accountPermissions, config::system_account_name, N(regproxy), act_payload)});
+         send_actions({create_action(accountPermissions, config::system_account_name, N(unregproxy), act_payload)});
       });
    }
 };
