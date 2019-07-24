@@ -1921,10 +1921,10 @@ struct regproxy_subcommand {
    regproxy_subcommand(CLI::App* actionRoot) {
       auto register_proxy = actionRoot->add_subcommand("regproxy", localized("Register an account as a proxy (for voting)"));
       register_proxy->add_option("proxy", proxy, localized("The proxy account to register"))->required();
-      register_proxy->add_option("name", name, localized("proxy's human readable name"), true);
-      register_proxy->add_option("slogan", slogan, localized("proxy's short description"), true);
-      register_proxy->add_option("philosophy", philosophy, localized("proxy's voting philosophy"), true);
-      register_proxy->add_option("background", background, localized("who is the proxy?"), true);
+      register_proxy->add_option("name", name, localized("proxy's human readable name"))->required();
+      register_proxy->add_option("slogan", slogan, localized("proxy's short description"))->required();
+      register_proxy->add_option("philosophy", philosophy, localized("proxy's voting philosophy"))->required();
+      register_proxy->add_option("background", background, localized("who is the proxy?"))->required();
       register_proxy->add_option("website", website, localized("url to website"), true);
       register_proxy->add_option("logo_256", logo_256, localized("url to an image with the size of 256 x 256 px"), true);
       add_standard_transaction_options(register_proxy, "proxy@active");
