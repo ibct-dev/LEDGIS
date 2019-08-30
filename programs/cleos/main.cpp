@@ -1017,36 +1017,6 @@ struct register_producer_subcommand {
    }
 };
 
-// struct update_producer_subcommand {
-//    string producer_str;
-//    string producer_key_str;
-//    string transfer_ratio;
-//    string url;
-//    uint16_t loc = 0;
-
-//    update_producer_subcommand(CLI::App* actionRoot) {
-//       auto update_producer = actionRoot->add_subcommand("updateprod", localized("Update a producer"));
-//       update_producer->add_option("account", producer_str, localized("The account to update as a producer"))->required();
-//       update_producer->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
-//       update_producer->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
-//       update_producer->add_option("url", url, localized("url where info about producer can be found"), true);
-//       update_producer->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
-//       add_standard_transaction_options(update_producer, "account@active");
-
-
-//       update_producer->set_callback([this] {
-//          public_key_type producer_key;
-//          try {
-//             producer_key = public_key_type(producer_key_str);
-//          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
-
-//          auto updateprod_var = updateprod_variant(producer_str, producer_key, transfer_ratio, url, loc );
-//          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
-//          send_actions({create_action(accountPermissions, config::system_account_name, N(updateprod), updateprod_var)});
-//       });
-//    }
-// };
-
 struct create_account_subcommand {
    string creator;
    string account_name;
@@ -1186,7 +1156,7 @@ struct vote_producer_proxy_subcommand {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("voter", voter_str)
                   ("proxy", proxy_str)
-                  ("producers", std::vector<account_name>{});
+                  ("interiors", std::vector<account_name>{});
          auto accountPermissions = get_account_permissions(tx_permission, {voter_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(voteproducer), act_payload)});
       });
@@ -1916,27 +1886,27 @@ struct regproxy_subcommand {
    string philosophy;
    string background;
    string website;
+   string url;
+   string city;
    string logo_256;
 
    regproxy_subcommand(CLI::App* actionRoot) {
       auto register_proxy = actionRoot->add_subcommand("regproxy", localized("Register an account as a proxy (for voting)"));
       register_proxy->add_option("proxy", proxy, localized("The proxy account to register"))->required();
-      register_proxy->add_option("name", name, localized("proxy's human readable name"))->required();
       register_proxy->add_option("slogan", slogan, localized("proxy's short description"))->required();
-      register_proxy->add_option("philosophy", philosophy, localized("proxy's voting philosophy"))->required();
       register_proxy->add_option("background", background, localized("who is the proxy?"))->required();
-      register_proxy->add_option("website", website, localized("url to website"), true);
+      register_proxy->add_option("url", url, localized("url to website"), true);
+      register_proxy->add_option("city", city, localized("a city representing a proxy"), true);
       register_proxy->add_option("logo_256", logo_256, localized("url to an image with the size of 256 x 256 px"), true);
       add_standard_transaction_options(register_proxy, "proxy@active");
 
       register_proxy->set_callback([this] {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("proxy", proxy)
-                  ("name", name)
                   ("slogan", slogan)
-                  ("philosophy", philosophy)
                   ("background", background)
-                  ("website", website)
+                  ("url", url)
+                  ("city", city)
                   ("logo_256", logo_256);
          auto accountPermissions = get_account_permissions(tx_permission, {proxy,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproxy), act_payload)});
@@ -2131,15 +2101,15 @@ struct cancelrexorder_subcommand {
    }
 };
 
-struct rentcpu_subcommand {
+struct leasecpu_subcommand {
    string from_str;
    string receiver_str;
    string loan_payment_str;
    string loan_fund_str;
-   const name act_name{ N(rentcpu) };
+   const name act_name{ N(leasecpu) };
 
-   rentcpu_subcommand(CLI::App* actionRoot) {
-      auto rentcpu = actionRoot->add_subcommand("rentcpu", localized("Rent CPU bandwidth for 30 days"));
+   leasecpu_subcommand(CLI::App* actionRoot) {
+      auto leasecpu = actionRoot->add_subcommand("leasecpu", localized("Rent CPU bandwidth for 30 days"));
       rentcpu->add_option("from",         from_str,         localized("Account paying rent fees"))->required();
       rentcpu->add_option("receiver",     receiver_str,     localized("Account to whom rented CPU bandwidth is staked"))->required();
       rentcpu->add_option("loan_payment", loan_payment_str, localized("Loan fee to be paid, used to calculate amount of rented bandwidth"))->required();
@@ -2157,21 +2127,21 @@ struct rentcpu_subcommand {
    }
 };
 
-struct rentnet_subcommand {
+struct leasenet_subcommand {
    string from_str;
    string receiver_str;
    string loan_payment_str;
    string loan_fund_str;
-   const name act_name{ N(rentnet) };
+   const name act_name{ N(leasenet) };
 
-   rentnet_subcommand(CLI::App* actionRoot) {
-      auto rentnet = actionRoot->add_subcommand("rentnet", localized("Rent Network bandwidth for 30 days"));
-      rentnet->add_option("from",         from_str,         localized("Account paying rent fees"))->required();
-      rentnet->add_option("receiver",     receiver_str,     localized("Account to whom rented Network bandwidth is staked"))->required();
-      rentnet->add_option("loan_payment", loan_payment_str, localized("Loan fee to be paid, used to calculate amount of rented bandwidth"))->required();
-      rentnet->add_option("loan_fund",    loan_fund_str,    localized("Loan fund to be used in automatic renewal, can be 0 tokens"))->required();
-      add_standard_transaction_options(rentnet, "from@active");
-      rentnet->set_callback([this] {
+   leasenet_subcommand(CLI::App* actionRoot) {
+      auto leasenet = actionRoot->add_subcommand("leasenet", localized("Rent Network bandwidth for 30 days"));
+      leasenet->add_option("from",         from_str,         localized("Account paying rent fees"))->required();
+      leasenet->add_option("receiver",     receiver_str,     localized("Account to whom rented Network bandwidth is staked"))->required();
+      leasenet->add_option("loan_payment", loan_payment_str, localized("Loan fee to be paid, used to calculate amount of rented bandwidth"))->required();
+      leasenet->add_option("loan_fund",    loan_fund_str,    localized("Loan fund to be used in automatic renewal, can be 0 tokens"))->required();
+      add_standard_transaction_options(leasenet, "from@active");
+      leasenet->set_callback([this] {
          fc::variant act_payload = fc::mutable_variant_object()
             ("from",         from_str)
             ("receiver",     receiver_str)
@@ -4255,8 +4225,8 @@ int main( int argc, char** argv ) {
    auto cancelrexorder = cancelrexorder_subcommand(rex);
    auto mvtosavings    = mvtosavings_subcommand(rex);
    auto mvfromsavings  = mvfrsavings_subcommand(rex);
-   auto rentcpu        = rentcpu_subcommand(rex);
-   auto rentnet        = rentnet_subcommand(rex);
+   auto leasecpu        = leasecpu_subcommand(rex);
+   auto leasenet        = leasenet_subcommand(rex);
    auto fundcpuloan    = fundcpuloan_subcommand(rex);
    auto fundnetloan    = fundnetloan_subcommand(rex);
    auto defcpuloan     = defcpuloan_subcommand(rex);
