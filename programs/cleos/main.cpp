@@ -2109,13 +2109,13 @@ struct leasecpu_subcommand {
    const name act_name{ N(leasecpu) };
 
    leasecpu_subcommand(CLI::App* actionRoot) {
-      auto leasecpu = actionRoot->add_subcommand("leasecpu", localized("Rent CPU bandwidth for 30 days"));
-      rentcpu->add_option("from",         from_str,         localized("Account paying rent fees"))->required();
-      rentcpu->add_option("receiver",     receiver_str,     localized("Account to whom rented CPU bandwidth is staked"))->required();
-      rentcpu->add_option("loan_payment", loan_payment_str, localized("Loan fee to be paid, used to calculate amount of rented bandwidth"))->required();
-      rentcpu->add_option("loan_fund",    loan_fund_str,    localized("Loan fund to be used in automatic renewal, can be 0 tokens"))->required();
-      add_standard_transaction_options(rentcpu, "from@active");
-      rentcpu->set_callback([this] {
+      auto leasecpu = actionRoot->add_subcommand("leasecpu", localized("Lease CPU bandwidth for 30 days"));
+      leasecpu->add_option("from",         from_str,         localized("Account paying lease fees"))->required();
+      leasecpu->add_option("receiver",     receiver_str,     localized("Account to whom leased CPU bandwidth is staked"))->required();
+      leasecpu->add_option("loan_payment", loan_payment_str, localized("Loan fee to be paid, used to calculate amount of leased bandwidth"))->required();
+      leasecpu->add_option("loan_fund",    loan_fund_str,    localized("Loan fund to be used in automatic renewal, can be 0 tokens"))->required();
+      add_standard_transaction_options(leasecpu, "from@active");
+      leasecpu->set_callback([this] {
          fc::variant act_payload = fc::mutable_variant_object()
             ("from",         from_str)
             ("receiver",     receiver_str)
@@ -2135,10 +2135,10 @@ struct leasenet_subcommand {
    const name act_name{ N(leasenet) };
 
    leasenet_subcommand(CLI::App* actionRoot) {
-      auto leasenet = actionRoot->add_subcommand("leasenet", localized("Rent Network bandwidth for 30 days"));
-      leasenet->add_option("from",         from_str,         localized("Account paying rent fees"))->required();
-      leasenet->add_option("receiver",     receiver_str,     localized("Account to whom rented Network bandwidth is staked"))->required();
-      leasenet->add_option("loan_payment", loan_payment_str, localized("Loan fee to be paid, used to calculate amount of rented bandwidth"))->required();
+      auto leasenet = actionRoot->add_subcommand("leasenet", localized("Lease Network bandwidth for 30 days"));
+      leasenet->add_option("from",         from_str,         localized("Account paying lease fees"))->required();
+      leasenet->add_option("receiver",     receiver_str,     localized("Account to whom leaseed Network bandwidth is staked"))->required();
+      leasenet->add_option("loan_payment", loan_payment_str, localized("Loan fee to be paid, used to calculate amount of leased bandwidth"))->required();
       leasenet->add_option("loan_fund",    loan_fund_str,    localized("Loan fund to be used in automatic renewal, can be 0 tokens"))->required();
       add_standard_transaction_options(leasenet, "from@active");
       leasenet->set_callback([this] {
