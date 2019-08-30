@@ -7,9 +7,9 @@ VERSION=2.0
 
 [[ ! $NAME == "Ubuntu" ]] && set -i # Ubuntu doesn't support interactive mode since it uses dash
 
-[[ ! -d $BUILD_DIR ]] && printf "${COLOR_RED}Please run ./ecrio_build.sh first!${COLOR_NC}" && exit 1
+[[ ! -d $BUILD_DIR ]] && printf "${COLOR_RED}Please run ./legis_build.sh first!${COLOR_NC}" && exit 1
 echo "${COLOR_CYAN}====================================================================================="
-echo "========================== ${COLOR_WHITE}Starting ECRIO Installation${COLOR_CYAN} ==============================${COLOR_NC}"
+echo "========================== ${COLOR_WHITE}Starting LEGIS Installation${COLOR_CYAN} ==============================${COLOR_NC}"
 execute cd $BUILD_DIR
 execute make install
 execute cd ..
@@ -24,8 +24,8 @@ echo "    ${COLOR_RED}╚══════╝ ╚═════╝╚═╝  �
 echo ""
 
 echo "==============================================================================================${COLOR_NC}"
-echo "${COLOR_GREEN}ECRIO has been installed into ${EOSIO_INSTALL_DIR}/bin${COLOR_NC}"
-echo "${COLOR_YELLOW}Uninstall with: ./scripts/ecrio_uninstall.sh${COLOR_NC}"
+echo "${COLOR_GREEN}LEGIS has been installed into ${EOSIO_INSTALL_DIR}/bin${COLOR_NC}"
+echo "${COLOR_YELLOW}Uninstall with: ./scripts/legis_uninstall.sh${COLOR_NC}"
 echo "==============================================================================================${COLOR_NC}"
 
 echo ""

@@ -150,26 +150,26 @@ BOOST_AUTO_TEST_CASE( forking ) try {
    wlog("set producer schedule to [dan,sam,pam]");
    c.produce_blocks(30);
 
-   auto r2 = c.create_accounts( {N(ecrio.token)} );
+   auto r2 = c.create_accounts( {N(legis.token)} );
    wdump((fc::json::to_pretty_string(r2)));
-   c.set_code( N(ecrio.token), contracts::ecrio_token_wasm() );
-   c.set_abi( N(ecrio.token), contracts::ecrio_token_abi().data() );
+   c.set_code( N(legis.token), contracts::legis_token_wasm() );
+   c.set_abi( N(legis.token), contracts::legis_token_abi().data() );
    c.produce_blocks(10);
 
 
-   auto cr = c.push_action( N(ecrio.token), N(create), N(ecrio.token), mutable_variant_object()
-              ("issuer",       "ecrio" )
+   auto cr = c.push_action( N(legis.token), N(create), N(legis.token), mutable_variant_object()
+              ("issuer",       "legis" )
               ("maximum_supply", core_from_string("10000000.0000"))
       );
 
-   cr = c.push_action( N(ecrio.token), N(issue), config::system_account_name, mutable_variant_object()
-              ("to",       "ecrio" )
+   cr = c.push_action( N(legis.token), N(issue), config::system_account_name, mutable_variant_object()
+              ("to",       "legis" )
               ("quantity", core_from_string("100.0000"))
               ("memo", "")
       );
 
-   cr = c.push_action( N(ecrio.token), N(transfer), config::system_account_name, mutable_variant_object()
-              ("from",     "ecrio")
+   cr = c.push_action( N(legis.token), N(transfer), config::system_account_name, mutable_variant_object()
+              ("from",     "legis")
               ("to",       "dan" )
               ("quantity", core_from_string("100.0000"))
               ("memo", "")

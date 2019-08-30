@@ -7,15 +7,15 @@ if [[ -z "${NAME}" ]]; then
         # Obtain OS NAME, and VERSION
         . /etc/os-release
     elif [[ $ARCH == "Darwin" ]]; then export NAME=$(sw_vers -productName)
-    else echo " ${COLOR_RED}- ECRIO is not supported for your Architecture!${COLOR_NC}" && exit 1
+    else echo " ${COLOR_RED}- LEGIS is not supported for your Architecture!${COLOR_NC}" && exit 1
     fi
 fi
 
 # Setup yum and apt variables
 if [[ $NAME =~ "Amazon Linux" ]] || [[ $NAME == "CentOS Linux" ]]; then
-    if ! YUM=$( command -v yum 2>/dev/null ); then echo "${COLOR_RED}YUM must be installed to compile ECRIO${COLOR_NC}" && exit 1; fi
+    if ! YUM=$( command -v yum 2>/dev/null ); then echo "${COLOR_RED}YUM must be installed to compile LEGIS${COLOR_NC}" && exit 1; fi
 elif [[ $NAME == "Ubuntu" ]]; then
-    if ! APTGET=$( command -v apt-get 2>/dev/null ); then echo "${COLOR_RED}APT-GET must be installed to compile ECRIO${COLOR_NC}" && exit 1; fi
+    if ! APTGET=$( command -v apt-get 2>/dev/null ); then echo "${COLOR_RED}APT-GET must be installed to compile LEGIS${COLOR_NC}" && exit 1; fi
 fi
 
 # Obtain dependency versions; Must come first in the script
@@ -33,7 +33,7 @@ function setup() {
         echo "BOOST_LOCATION: ${BOOST_LOCATION}"
         echo "INSTALL_LOCATION: ${INSTALL_LOCATION}"
         echo "BUILD_DIR: ${BUILD_DIR}"
-        echo "ECRIO_INSTALL_DIR: ${EOSIO_INSTALL_DIR}"
+        echo "LEGIS_INSTALL_DIR: ${EOSIO_INSTALL_DIR}"
         echo "NONINTERACTIVE: ${NONINTERACTIVE}"
         echo "PROCEED: ${PROCEED}"
         echo "ENABLE_COVERAGE_TESTING: ${ENABLE_COVERAGE_TESTING}"
@@ -62,7 +62,7 @@ function setup() {
 function ensure-which() {
   if ! which ls &>/dev/null; then
     while true; do
-      [[ $NONINTERACTIVE == false ]] && printf "${COLOR_YELLOW}ECRIO compiler checks require the 'which' package: Would you like for us to install it? (y/n)?${COLOR_NC}" && read -p " " PROCEED
+      [[ $NONINTERACTIVE == false ]] && printf "${COLOR_YELLOW}LEGIS compiler checks require the 'which' package: Would you like for us to install it? (y/n)?${COLOR_NC}" && read -p " " PROCEED
       echo ""
       case $PROCEED in
           "" ) echo "What would you like to do?";;
@@ -77,7 +77,7 @@ function ensure-which() {
 # Prompt user for installation directory.
 function install-directory-prompt() {
   if [[ -z $INSTALL_LOCATION ]]; then
-    echo "No installation location was specified. Please provide the location where ECRIO is installed."
+    echo "No installation location was specified. Please provide the location where LEGIS is installed."
     while true; do
       [[ $NONINTERACTIVE == false ]] && printf "${COLOR_YELLOW}Do you wish to use the default location? ${EOSIO_INSTALL_DIR}? (y/n)${COLOR_NC}" && read -p " " PROCEED
       echo ""
@@ -99,12 +99,12 @@ function install-directory-prompt() {
     export EOSIO_INSTALL_DIR="$INSTALL_LOCATION"
   fi
   . ./scripts/.build_vars
-  echo "ECRIO will be installed to: ${EOSIO_INSTALL_DIR}"
+  echo "LEGIS will be installed to: ${EOSIO_INSTALL_DIR}"
 }
 
 function previous-install-prompt() {
   if [[ -d $EOSIO_INSTALL_DIR ]]; then
-    echo "ECRIO has already been installed into ${EOSIO_INSTALL_DIR}... It's suggested that you ecrio_uninstall.sh before re-running this script."
+    echo "LEGIS has already been installed into ${EOSIO_INSTALL_DIR}... It's suggested that you legis_uninstall.sh before re-running this script."
     while true; do
       [[ $NONINTERACTIVE == false ]] && printf "${COLOR_YELLOW}Do you wish to proceed anyway? (y/n)${COLOR_NC}" && read -p " " PROCEED
       echo ""
@@ -125,7 +125,7 @@ function resources() {
 }
 
 function print_supported_linux_distros_and_exit() {
-   echo "On Linux the ECRIO build script only supports Amazon, Centos, and Ubuntu."
+   echo "On Linux the LEGIS build script only supports Amazon, Centos, and Ubuntu."
    echo "Please install on a supported version of one of these Linux distributions."
    echo "https://aws.amazon.com/amazon-linux-ami/"
    echo "https://www.centos.org/"

@@ -69,7 +69,7 @@ void validate_authority_precondition( const apply_context& context, const author
 /**
  *  This method is called assuming precondition_system_newaccount succeeds a
  */
-void apply_ecrio_newaccount(apply_context& context) {
+void apply_legis_newaccount(apply_context& context) {
    auto create = context.get_action().data_as<newaccount>();
    try {
    context.require_authorization(create.creator);
@@ -89,8 +89,8 @@ void apply_ecrio_newaccount(apply_context& context) {
    // Check if the creator is privileged
    const auto &creator = db.get<account_metadata_object, by_name>(create.creator);
    if( !creator.is_privileged() ) {
-      EOS_ASSERT( name_str.find( "ecrio." ) != 0, action_validate_exception,
-                  "only privileged accounts can have names that start with 'ecrio.'" );
+      EOS_ASSERT( name_str.find( "legis." ) != 0, action_validate_exception,
+                  "only privileged accounts can have names that start with 'legis.'" );
    }
 
    auto existing_account = db.find<account_object, by_name>(create.name);
@@ -127,7 +127,7 @@ void apply_ecrio_newaccount(apply_context& context) {
 
 } FC_CAPTURE_AND_RETHROW( (create) ) }
 
-void apply_ecrio_setcode(apply_context& context) {
+void apply_legis_setcode(apply_context& context) {
    const auto& cfg = context.control.get_global_properties().configuration;
 
    auto& db = context.db;
@@ -201,7 +201,7 @@ void apply_ecrio_setcode(apply_context& context) {
    }
 }
 
-void apply_ecrio_setabi(apply_context& context) {
+void apply_legis_setabi(apply_context& context) {
    auto& db  = context.db;
    auto  act = context.get_action().data_as<setabi>();
 
@@ -232,7 +232,7 @@ void apply_ecrio_setabi(apply_context& context) {
    }
 }
 
-void apply_ecrio_updateauth(apply_context& context) {
+void apply_legis_updateauth(apply_context& context) {
 
    auto update = context.get_action().data_as<updateauth>();
    context.require_authorization(update.account); // only here to mark the single authority on this action as used
@@ -243,8 +243,8 @@ void apply_ecrio_updateauth(apply_context& context) {
    EOS_ASSERT(!update.permission.empty(), action_validate_exception, "Cannot create authority with empty name");
    EOS_ASSERT( update.permission.to_string().find( "eosio." ) != 0, action_validate_exception,
                "Permission names that start with 'eosio.' are reserved" );
-   EOS_ASSERT( update.permission.to_string().find( "ecrio." ) != 0, action_validate_exception,
-               "Permission names that start with 'ecrio.' are reserved" );
+   EOS_ASSERT( update.permission.to_string().find( "legis." ) != 0, action_validate_exception,
+               "Permission names that start with 'legis.' are reserved" );
    EOS_ASSERT(update.permission != update.parent, action_validate_exception, "Cannot set an authority as its own parent");
    db.get<account_object, by_name>(update.account);
    EOS_ASSERT(validate(update.auth), action_validate_exception,
@@ -298,7 +298,7 @@ void apply_ecrio_updateauth(apply_context& context) {
    }
 }
 
-void apply_ecrio_deleteauth(apply_context& context) {
+void apply_legis_deleteauth(apply_context& context) {
 //   context.require_write_lock( config::eosio_auth_scope );
 
    auto remove = context.get_action().data_as<deleteauth>();
@@ -329,7 +329,7 @@ void apply_ecrio_deleteauth(apply_context& context) {
 
 }
 
-void apply_ecrio_linkauth(apply_context& context) {
+void apply_legis_linkauth(apply_context& context) {
 //   context.require_write_lock( config::eosio_auth_scope );
 
    auto requirement = context.get_action().data_as<linkauth>();
@@ -385,7 +385,7 @@ void apply_ecrio_linkauth(apply_context& context) {
   } FC_CAPTURE_AND_RETHROW((requirement))
 }
 
-void apply_ecrio_unlinkauth(apply_context& context) {
+void apply_legis_unlinkauth(apply_context& context) {
 //   context.require_write_lock( config::eosio_auth_scope );
 
    auto& db = context.db;
@@ -404,7 +404,7 @@ void apply_ecrio_unlinkauth(apply_context& context) {
    db.remove(*link);
 }
 
-void apply_ecrio_canceldelay(apply_context& context) {
+void apply_legis_canceldelay(apply_context& context) {
    auto cancel = context.get_action().data_as<canceldelay>();
    context.require_authorization(cancel.canceling_auth.actor); // only here to mark the single authority on this action as used
 

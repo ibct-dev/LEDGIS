@@ -321,20 +321,20 @@ struct controller_impl {
 #define SET_APP_HANDLER( receiver, contract, action) \
    set_apply_handler( #receiver, #contract, #action, &BOOST_PP_CAT(apply_, BOOST_PP_CAT(contract, BOOST_PP_CAT(_,action) ) ) )
 
-   SET_APP_HANDLER( ecrio, ecrio, newaccount );
-   SET_APP_HANDLER( ecrio, ecrio, setcode );
-   SET_APP_HANDLER( ecrio, ecrio, setabi );
-   SET_APP_HANDLER( ecrio, ecrio, updateauth );
-   SET_APP_HANDLER( ecrio, ecrio, deleteauth );
-   SET_APP_HANDLER( ecrio, ecrio, linkauth );
-   SET_APP_HANDLER( ecrio, ecrio, unlinkauth );
+   SET_APP_HANDLER( legis, legis, newaccount );
+   SET_APP_HANDLER( legis, legis, setcode );
+   SET_APP_HANDLER( legis, legis, setabi );
+   SET_APP_HANDLER( legis, legis, updateauth );
+   SET_APP_HANDLER( legis, legis, deleteauth );
+   SET_APP_HANDLER( legis, legis, linkauth );
+   SET_APP_HANDLER( legis, legis, unlinkauth );
 /*
-   SET_APP_HANDLER( ecrio, ecrio, postrecovery );
-   SET_APP_HANDLER( ecrio, ecrio, passrecovery );
-   SET_APP_HANDLER( ecrio, ecrio, vetorecovery );
+   SET_APP_HANDLER( legis, legis, postrecovery );
+   SET_APP_HANDLER( legis, legis, passrecovery );
+   SET_APP_HANDLER( legis, legis, vetorecovery );
 */
 
-   SET_APP_HANDLER( ecrio, ecrio, canceldelay );
+   SET_APP_HANDLER( legis, legis, canceldelay );
    }
 
 

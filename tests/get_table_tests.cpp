@@ -17,11 +17,11 @@
 // #include <asserter/asserter.wast.hpp>
 // #include <asserter/asserter.abi.hpp>
 
-// #include <ecrio.token/ecrio.token.wast.hpp>
-// #include <ecrio.token/ecrio.token.abi.hpp>
+// #include <legis.token/legis.token.wast.hpp>
+// #include <legis.token/legis.token.abi.hpp>
 
-// #include <ecrio.system/ecrio.system.wast.hpp>
-// #include <ecrio.system/ecrio.system.abi.hpp>
+// #include <legis.system/legis.system.wast.hpp>
+// #include <legis.system/legis.system.abi.hpp>
 // =======
 #include <contracts.hpp>
 // >>>>>>> 14a65aca147edf51fd86a958949e237fd430b9ed
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_SUITE(get_table_tests)
 
 transaction_trace_ptr
 issue_tokens( TESTER& t, account_name issuer, account_name to, const asset& amount,
-              std::string memo = "", account_name token_contract = N(ecrio.token) )
+              std::string memo = "", account_name token_contract = N(legis.token) )
 {
    signed_transaction trx;
 
@@ -80,27 +80,27 @@ issue_tokens( TESTER& t, account_name issuer, account_name to, const asset& amou
 BOOST_FIXTURE_TEST_CASE( get_scope_test, TESTER ) try {
    produce_blocks(2);
 
-   create_accounts({ N(ecrio.token), N(ecrio.ram), N(ecrio.ramfee), N(ecrio.stake),
-      N(ecrio.bpay), N(ecrio.vpay), N(ecrio.saving), N(ecrio.names) });
+   create_accounts({ N(legis.token), N(legis.ram), N(legis.ramfee), N(legis.stake),
+      N(legis.bpay), N(legis.vpay), N(legis.saving), N(legis.names) });
 
    std::vector<account_name> accs{N(inita), N(initb), N(initc), N(initd)};
    create_accounts(accs);
    produce_block();
 
 // <<<<<<< HEAD
-//    set_code( N(ecrio.token), ecrio_token_wast );
-//    set_abi( N(ecrio.token), ecrio_token_abi );
+//    set_code( N(legis.token), legis_token_wast );
+//    set_abi( N(legis.token), legis_token_abi );
 // =======
-   set_code( N(ecrio.token), contracts::ecrio_token_wasm() );
-   set_abi( N(ecrio.token), contracts::ecrio_token_abi().data() );
+   set_code( N(legis.token), contracts::legis_token_wasm() );
+   set_abi( N(legis.token), contracts::legis_token_abi().data() );
 // >>>>>>> 14a65aca147edf51fd86a958949e237fd430b9ed
    produce_blocks(1);
 
    // create currency
    auto act = mutable_variant_object()
-         ("issuer",       "ecrio")
+         ("issuer",       "legis")
          ("maximum_supply", eosio::chain::asset::from_string("1000000000.0000 SYS"));
-   push_action(N(ecrio.token), N(create), N(ecrio.token), act );
+   push_action(N(legis.token), N(create), N(legis.token), act );
 
    // issue
    for (account_name a: accs) {
@@ -109,20 +109,20 @@ BOOST_FIXTURE_TEST_CASE( get_scope_test, TESTER ) try {
    produce_blocks(1);
 
    eosio::chain_apis::read_only plugin(*(this->control), fc::microseconds::maximum());
-   eosio::chain_apis::read_only::get_table_by_scope_params param{N(ecrio.token), N(accounts), "inita", "", 10};
+   eosio::chain_apis::read_only::get_table_by_scope_params param{N(legis.token), N(accounts), "inita", "", 10};
    eosio::chain_apis::read_only::get_table_by_scope_result result = plugin.read_only::get_table_by_scope(param);
 
    BOOST_REQUIRE_EQUAL(4u, result.rows.size());
    BOOST_REQUIRE_EQUAL("", result.more);
    if (result.rows.size() >= 4) {
-      BOOST_REQUIRE_EQUAL(name(N(ecrio.token)), result.rows[0].code);
+      BOOST_REQUIRE_EQUAL(name(N(legis.token)), result.rows[0].code);
       BOOST_REQUIRE_EQUAL(name(N(inita)), result.rows[0].scope);
       BOOST_REQUIRE_EQUAL(name(N(accounts)), result.rows[0].table);
 // <<<<<<< HEAD
-//       BOOST_REQUIRE_EQUAL(name(N(ecrio)), result.rows[0].payer);
+//       BOOST_REQUIRE_EQUAL(name(N(legis)), result.rows[0].payer);
 //       BOOST_REQUIRE_EQUAL(1, result.rows[0].count);
 // =======
-      BOOST_REQUIRE_EQUAL(name(N(ecrio)), result.rows[0].payer);
+      BOOST_REQUIRE_EQUAL(name(N(legis)), result.rows[0].payer);
       BOOST_REQUIRE_EQUAL(1u, result.rows[0].count);
 // >>>>>>> 14a65aca147edf51fd86a958949e237fd430b9ed
 
@@ -161,27 +161,27 @@ BOOST_FIXTURE_TEST_CASE( get_scope_test, TESTER ) try {
 BOOST_FIXTURE_TEST_CASE( get_table_test, TESTER ) try {
    produce_blocks(2);
 
-   create_accounts({ N(ecrio.token), N(ecrio.ram), N(ecrio.ramfee), N(ecrio.stake),
-      N(ecrio.bpay), N(ecrio.vpay), N(ecrio.saving), N(ecrio.names) });
+   create_accounts({ N(legis.token), N(legis.ram), N(legis.ramfee), N(legis.stake),
+      N(legis.bpay), N(legis.vpay), N(legis.saving), N(legis.names) });
 
    std::vector<account_name> accs{N(inita), N(initb)};
    create_accounts(accs);
    produce_block();
 
 // <<<<<<< HEAD
-//    set_code( N(ecrio.token), ecrio_token_wast );
-//    set_abi( N(ecrio.token), ecrio_token_abi );
+//    set_code( N(legis.token), legis_token_wast );
+//    set_abi( N(legis.token), legis_token_abi );
 // =======
-   set_code( N(ecrio.token), contracts::ecrio_token_wasm() );
-   set_abi( N(ecrio.token), contracts::ecrio_token_abi().data() );
+   set_code( N(legis.token), contracts::legis_token_wasm() );
+   set_abi( N(legis.token), contracts::legis_token_abi().data() );
 // >>>>>>> 14a65aca147edf51fd86a958949e237fd430b9ed
    produce_blocks(1);
 
    // create currency
    auto act = mutable_variant_object()
-         ("issuer",       "ecrio")
+         ("issuer",       "legis")
          ("maximum_supply", eosio::chain::asset::from_string("1000000000.0000 SYS"));
-   push_action(N(ecrio.token), N(create), N(ecrio.token), act );
+   push_action(N(legis.token), N(create), N(legis.token), act );
 
    // issue
    for (account_name a: accs) {
@@ -191,9 +191,9 @@ BOOST_FIXTURE_TEST_CASE( get_table_test, TESTER ) try {
 
    // create currency 2
    act = mutable_variant_object()
-         ("issuer",       "ecrio")
+         ("issuer",       "legis")
          ("maximum_supply", eosio::chain::asset::from_string("1000000000.0000 AAA"));
-   push_action(N(ecrio.token), N(create), N(ecrio.token), act );
+   push_action(N(legis.token), N(create), N(legis.token), act );
    // issue
    for (account_name a: accs) {
       issue_tokens( *this, config::system_account_name, a, eosio::chain::asset::from_string("9999.0000 AAA") );
@@ -202,9 +202,9 @@ BOOST_FIXTURE_TEST_CASE( get_table_test, TESTER ) try {
 
    // create currency 3
    act = mutable_variant_object()
-         ("issuer",       "ecrio")
+         ("issuer",       "legis")
          ("maximum_supply", eosio::chain::asset::from_string("1000000000.0000 CCC"));
-   push_action(N(ecrio.token), N(create), N(ecrio.token), act );
+   push_action(N(legis.token), N(create), N(legis.token), act );
    // issue
    for (account_name a: accs) {
       issue_tokens( *this, config::system_account_name, a, eosio::chain::asset::from_string("7777.0000 CCC") );
@@ -213,9 +213,9 @@ BOOST_FIXTURE_TEST_CASE( get_table_test, TESTER ) try {
 
    // create currency 3
    act = mutable_variant_object()
-         ("issuer",       "ecrio")
+         ("issuer",       "legis")
          ("maximum_supply", eosio::chain::asset::from_string("1000000000.0000 BBB"));
-   push_action(N(ecrio.token), N(create), N(ecrio.token), act );
+   push_action(N(legis.token), N(create), N(legis.token), act );
    // issue
    for (account_name a: accs) {
       issue_tokens( *this, config::system_account_name, a, eosio::chain::asset::from_string("8888.0000 BBB") );
@@ -225,7 +225,7 @@ BOOST_FIXTURE_TEST_CASE( get_table_test, TESTER ) try {
    // get table: normal case
    eosio::chain_apis::read_only plugin(*(this->control), fc::microseconds::maximum());
    eosio::chain_apis::read_only::get_table_rows_params p;
-   p.code = N(ecrio.token);
+   p.code = N(legis.token);
    p.scope = "inita";
    p.table = N(accounts);
    p.json = true;
@@ -263,10 +263,10 @@ BOOST_FIXTURE_TEST_CASE( get_table_test, TESTER ) try {
       BOOST_REQUIRE_EQUAL("8888.0000 BBB", result.rows[2]["data"]["balance"].as_string());
       BOOST_REQUIRE_EQUAL("7777.0000 CCC", result.rows[1]["data"]["balance"].as_string());
       BOOST_REQUIRE_EQUAL("10000.0000 SYS", result.rows[0]["data"]["balance"].as_string());
-      BOOST_REQUIRE_EQUAL("ecrio", result.rows[0]["payer"].as_string());
-      BOOST_REQUIRE_EQUAL("ecrio", result.rows[1]["payer"].as_string());
-      BOOST_REQUIRE_EQUAL("ecrio", result.rows[2]["payer"].as_string());
-      BOOST_REQUIRE_EQUAL("ecrio", result.rows[3]["payer"].as_string());
+      BOOST_REQUIRE_EQUAL("legis", result.rows[0]["payer"].as_string());
+      BOOST_REQUIRE_EQUAL("legis", result.rows[1]["payer"].as_string());
+      BOOST_REQUIRE_EQUAL("legis", result.rows[2]["payer"].as_string());
+      BOOST_REQUIRE_EQUAL("legis", result.rows[3]["payer"].as_string());
    }
    p.show_payer = false;
 
@@ -345,27 +345,27 @@ BOOST_FIXTURE_TEST_CASE( get_table_test, TESTER ) try {
 BOOST_FIXTURE_TEST_CASE( get_table_by_seckey_test, TESTER ) try {
    produce_blocks(2);
 
-   create_accounts({ N(ecrio.token), N(ecrio.ram), N(ecrio.ramfee), N(ecrio.stake),
-      N(ecrio.bpay), N(ecrio.vpay), N(ecrio.saving), N(ecrio.names) });
+   create_accounts({ N(legis.token), N(legis.ram), N(legis.ramfee), N(legis.stake),
+      N(legis.bpay), N(legis.vpay), N(legis.saving), N(legis.names) });
 
    std::vector<account_name> accs{N(inita), N(initb), N(initc), N(initd)};
    create_accounts(accs);
    produce_block();
 
 // <<<<<<< HEAD
-//    set_code( N(ecrio.token), ecrio_token_wast );
-//    set_abi( N(ecrio.token), ecrio_token_abi );
+//    set_code( N(legis.token), legis_token_wast );
+//    set_abi( N(legis.token), legis_token_abi );
 // =======
-   set_code( N(ecrio.token), contracts::ecrio_token_wasm() );
-   set_abi( N(ecrio.token), contracts::ecrio_token_abi().data() );
+   set_code( N(legis.token), contracts::legis_token_wasm() );
+   set_abi( N(legis.token), contracts::legis_token_abi().data() );
 // >>>>>>> 14a65aca147edf51fd86a958949e237fd430b9ed
    produce_blocks(1);
 
    // create currency
    auto act = mutable_variant_object()
-         ("issuer",       "ecrio")
+         ("issuer",       "legis")
          ("maximum_supply", eosio::chain::asset::from_string("1000000000.0000 SYS"));
-   push_action(N(ecrio.token), N(create), N(ecrio.token), act );
+   push_action(N(legis.token), N(create), N(legis.token), act );
 
    // issue
    for (account_name a: accs) {
@@ -373,8 +373,8 @@ BOOST_FIXTURE_TEST_CASE( get_table_by_seckey_test, TESTER ) try {
    }
    produce_blocks(1);
 
-   set_code( config::system_account_name, contracts::ecrio_system_wasm() );
-   set_abi( config::system_account_name, contracts::ecrio_system_abi().data() );
+   set_code( config::system_account_name, contracts::legis_system_wasm() );
+   set_abi( config::system_account_name, contracts::legis_system_abi().data() );
 
    base_tester::push_action(config::system_account_name, N(init),
                             config::system_account_name,  mutable_variant_object()
@@ -384,7 +384,7 @@ BOOST_FIXTURE_TEST_CASE( get_table_by_seckey_test, TESTER ) try {
 
    // bidname
    auto bidname = [this]( const account_name& bidder, const account_name& newname, const asset& bid ) {
-      return push_action( N(ecrio), N(bidname), bidder, fc::mutable_variant_object()
+      return push_action( N(legis), N(bidname), bidder, fc::mutable_variant_object()
                           ("bidder",  bidder)
                           ("newname", newname)
                           ("bid", bid)
@@ -400,8 +400,8 @@ BOOST_FIXTURE_TEST_CASE( get_table_by_seckey_test, TESTER ) try {
    // get table: normal case
    eosio::chain_apis::read_only plugin(*(this->control), fc::microseconds::maximum());
    eosio::chain_apis::read_only::get_table_rows_params p;
-   p.code = N(ecrio);
-   p.scope = "ecrio";
+   p.code = N(legis);
+   p.scope = "legis";
    p.table = N(namebids);
    p.json = true;
    p.index_position = "secondary"; // ordered by high_bid

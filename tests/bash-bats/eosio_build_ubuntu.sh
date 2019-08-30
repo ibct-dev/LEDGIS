@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 load helpers/general
 
-export SCRIPT_LOCATION="scripts/ecrio_build.sh"
+export SCRIPT_LOCATION="scripts/legis_build.sh"
 export TEST_LABEL="[eosio_build_ubuntu]"
 
 [[ $ARCH == "Linux" ]] || exit 0 # Exit 0 is required for pipeline

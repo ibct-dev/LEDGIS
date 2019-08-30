@@ -88,7 +88,7 @@ class Cluster(object):
         self.defProducerAccounts={}
         self.defproduceraAccount=self.defProducerAccounts["defproducera"]= Account("defproducera")
         self.defproducerbAccount=self.defProducerAccounts["defproducerb"]= Account("defproducerb")
-        self.eosioAccount=self.defProducerAccounts["ecrio"]= Account("ecrio")
+        self.eosioAccount=self.defProducerAccounts["legis"]= Account("legis")
 
         self.defproduceraAccount.ownerPrivateKey=defproduceraPrvtKey
         self.defproduceraAccount.activePrivateKey=defproduceraPrvtKey
@@ -165,7 +165,7 @@ class Cluster(object):
         pfSetupPolicy: determine the protocol feature setup policy (none, preactivate_feature_only, or full)
         alternateVersionLabelsFile: Supply an alternate version labels file to use with associatedNodeLabels.
         associatedNodeLabels: Supply a dictionary of node numbers to use an alternate label for a specific node.
-        loadSystemContract: indicate whether the ecrio.system contract should be loaded (setting this to False causes useBiosBootFile to be treated as False)
+        loadSystemContract: indicate whether the legis.system contract should be loaded (setting this to False causes useBiosBootFile to be treated as False)
         """
         assert(isinstance(topo, str))
         assert PFSetupPolicy.isValid(pfSetupPolicy)
@@ -463,7 +463,7 @@ class Cluster(object):
             initAccountKeys(account, producerKeys[name])
             self.defProducerAccounts[name] = account
 
-        self.eosioAccount=self.defProducerAccounts["ecrio"]
+        self.eosioAccount=self.defProducerAccounts["legis"]
         self.defproduceraAccount=self.defProducerAccounts["defproducera"]
         self.defproducerbAccount=self.defProducerAccounts["defproducerb"]
 
@@ -922,7 +922,7 @@ class Cluster(object):
         nodeName=Utils.nodeExtensionToName("bios")
         producerKeys=Cluster.parseProducerKeys(configFile, nodeName)
         if producerKeys is None:
-            Utils.Print("ERROR: Failed to parse ecrio private keys from cluster config files.")
+            Utils.Print("ERROR: Failed to parse legis private keys from cluster config files.")
             return None
 
         for i in range(0, totalNodes):
@@ -946,11 +946,11 @@ class Cluster(object):
         cmd="bash bios_boot.sh"
         if Utils.Debug: Utils.Print("cmd: %s" % (cmd))
         env = {
-            "BIOS_CONTRACT_PATH": "unittests/contracts/old_versions/v1.6.0-rc3/ecrio.bios",
+            "BIOS_CONTRACT_PATH": "unittests/contracts/old_versions/v1.6.0-rc3/legis.bios",
             "FEATURE_DIGESTS": ""
         }
         if PFSetupPolicy.hasPreactivateFeature(pfSetupPolicy):
-            env["BIOS_CONTRACT_PATH"] = "unittests/contracts/ecrio.bios"
+            env["BIOS_CONTRACT_PATH"] = "unittests/contracts/legis.bios"
 
         if pfSetupPolicy == PFSetupPolicy.FULL:
             allBuiltinProtocolFeatureDigests = biosNode.getAllBuiltinFeatureDigestsToPreactivate()
@@ -987,7 +987,7 @@ class Cluster(object):
             Utils.Print("ERROR: Failed to create ignition wallet.")
             return None
 
-        eosioName="ecrio"
+        eosioName="legis"
         eosioKeys=producerKeys[eosioName]
         eosioAccount=Account(eosioName)
         eosioAccount.ownerPrivateKey=eosioKeys["private"]
@@ -1003,15 +1003,15 @@ class Cluster(object):
         initialFunds="1000000.0000 {0}".format(CORE_SYMBOL)
         Utils.Print("Transfer initial fund %s to individual accounts." % (initialFunds))
         trans=None
-        contract="ecrio.token"
+        contract="legis.token"
         action="transfer"
         for name, keys in producerKeys.items():
-            data="{\"from\":\"ecrio\",\"to\":\"%s\",\"quantity\":\"%s\",\"memo\":\"%s\"}" % (name, initialFunds, "init ecrio transfer")
-            opts="--permission ecrio@active"
-            if name != "ecrio":
+            data="{\"from\":\"legis\",\"to\":\"%s\",\"quantity\":\"%s\",\"memo\":\"%s\"}" % (name, initialFunds, "init legis transfer")
+            opts="--permission legis@active"
+            if name != "legis":
                 trans=biosNode.pushMessage(contract, action, data, opts)
                 if trans is None or not trans[0]:
-                    Utils.Print("ERROR: Failed to transfer funds from ecrio.token to %s." % (name))
+                    Utils.Print("ERROR: Failed to transfer funds from legis.token to %s." % (name))
                     return None
 
             Node.validateTransaction(trans[1])
@@ -1053,7 +1053,7 @@ class Cluster(object):
 
         ignWallet=self.walletMgr.create("ignition")
 
-        eosioName="ecrio"
+        eosioName="legis"
         eosioKeys=producerKeys[eosioName]
         eosioAccount=Account(eosioName)
         eosioAccount.ownerPrivateKey=eosioKeys["private"]
@@ -1065,7 +1065,7 @@ class Cluster(object):
             Utils.Print("ERROR: Failed to import %s account keys into ignition wallet." % (eosioName))
             return None
 
-        contract="ecrio.bios"
+        contract="legis.bios"
         contractDir="unittests/contracts/%s" % (contract)
         if PFSetupPolicy.hasPreactivateFeature(pfSetupPolicy):
             contractDir="unittests/contracts/%s" % (contract)
@@ -1117,8 +1117,8 @@ class Cluster(object):
                     setProdsStr=f.read()
 
                     Utils.Print("Setting producers.")
-                    opts="--permission ecrio@active"
-                    myTrans=biosNode.pushMessage("ecrio", "setprods", setProdsStr, opts)
+                    opts="--permission legis@active"
+                    myTrans=biosNode.pushMessage("legis", "setprods", setProdsStr, opts)
                     if myTrans is None or not myTrans[0]:
                         Utils.Print("ERROR: Failed to set producers.")
                         return None
@@ -1142,9 +1142,9 @@ class Cluster(object):
                 setProdsStr += ' ] }'
                 if Utils.Debug: Utils.Print("setprods: %s" % (setProdsStr))
                 Utils.Print("Setting producers: %s." % (", ".join(prodNames)))
-                opts="--permission ecrio@active"
+                opts="--permission legis@active"
                 # pylint: disable=redefined-variable-type
-                trans=biosNode.pushMessage("ecrio", "setprods", setProdsStr, opts)
+                trans=biosNode.pushMessage("legis", "setprods", setProdsStr, opts)
                 if trans is None or not trans[0]:
                     Utils.Print("ERROR: Failed to set producer %s." % (keys["name"]))
                     return None
@@ -1155,8 +1155,8 @@ class Cluster(object):
                 Utils.Print("ERROR: Failed to validate transaction %s got rolled into a block on server port %d." % (transId, biosNode.port))
                 return None
 
-            # wait for block production handover (essentially a block produced by anyone but ecrio).
-            lam = lambda: biosNode.getInfo(exitOnError=True)["head_block_producer"] != "ecrio"
+            # wait for block production handover (essentially a block produced by anyone but legis).
+            lam = lambda: biosNode.getInfo(exitOnError=True)["head_block_producer"] != "legis"
             ret=Utils.waitForBool(lam)
             if not ret:
                 Utils.Print("ERROR: Block production handover failed.")
@@ -1165,28 +1165,28 @@ class Cluster(object):
         if onlySetProds: return biosNode
 
         eosioTokenAccount=copy.deepcopy(eosioAccount)
-        eosioTokenAccount.name="ecrio.token"
+        eosioTokenAccount.name="legis.token"
         trans=biosNode.createAccount(eosioTokenAccount, eosioAccount, 0)
         if trans is None:
             Utils.Print("ERROR: Failed to create account %s" % (eosioTokenAccount.name))
             return None
 
         eosioRamAccount=copy.deepcopy(eosioAccount)
-        eosioRamAccount.name="ecrio.ram"
+        eosioRamAccount.name="legis.ram"
         trans=biosNode.createAccount(eosioRamAccount, eosioAccount, 0)
         if trans is None:
             Utils.Print("ERROR: Failed to create account %s" % (eosioRamAccount.name))
             return None
 
         eosioRamfeeAccount=copy.deepcopy(eosioAccount)
-        eosioRamfeeAccount.name="ecrio.ramfee"
+        eosioRamfeeAccount.name="legis.ramfee"
         trans=biosNode.createAccount(eosioRamfeeAccount, eosioAccount, 0)
         if trans is None:
             Utils.Print("ERROR: Failed to create account %s" % (eosioRamfeeAccount.name))
             return None
 
         eosioStakeAccount=copy.deepcopy(eosioAccount)
-        eosioStakeAccount.name="ecrio.stake"
+        eosioStakeAccount.name="legis.stake"
         trans=biosNode.createAccount(eosioStakeAccount, eosioAccount, 0)
         if trans is None:
             Utils.Print("ERROR: Failed to create account %s" % (eosioStakeAccount.name))
@@ -1198,7 +1198,7 @@ class Cluster(object):
             Utils.Print("ERROR: Failed to validate transaction %s got rolled into a block on server port %d." % (transId, biosNode.port))
             return None
 
-        contract="ecrio.token"
+        contract="legis.token"
         contractDir="unittests/contracts/%s" % (contract)
         wasmFile="%s.wasm" % (contract)
         abiFile="%s.abi" % (contract)
@@ -1216,7 +1216,7 @@ class Cluster(object):
         opts="--permission %s@active" % (contract)
         trans=biosNode.pushMessage(contract, action, data, opts)
         if trans is None or not trans[0]:
-            Utils.Print("ERROR: Failed to push create action to ecrio contract.")
+            Utils.Print("ERROR: Failed to push create action to legis contract.")
             return None
 
         Node.validateTransaction(trans[1])
@@ -1232,7 +1232,7 @@ class Cluster(object):
         opts="--permission %s@active" % (eosioAccount.name)
         trans=biosNode.pushMessage(contract, action, data, opts)
         if trans is None or not trans[0]:
-            Utils.Print("ERROR: Failed to push issue action to ecrio contract.")
+            Utils.Print("ERROR: Failed to push issue action to legis contract.")
             return None
 
         Node.validateTransaction(trans[1])
@@ -1246,7 +1246,7 @@ class Cluster(object):
             return None
 
         expectedAmount="1000000000.0000 {0}".format(CORE_SYMBOL)
-        Utils.Print("Verify ecrio issue, Expected: %s" % (expectedAmount))
+        Utils.Print("Verify legis issue, Expected: %s" % (expectedAmount))
         actualAmount=biosNode.getAccountEosBalanceStr(eosioAccount.name)
         if expectedAmount != actualAmount:
             Utils.Print("ERROR: Issue verification failed. Excepted %s, actual: %s" %
@@ -1254,7 +1254,7 @@ class Cluster(object):
             return None
 
         if loadSystemContract:
-            contract="ecrio.system"
+            contract="legis.system"
             contractDir="unittests/contracts/%s" % (contract)
             wasmFile="%s.wasm" % (contract)
             abiFile="%s.abi" % (contract)
