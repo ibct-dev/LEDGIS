@@ -166,7 +166,7 @@ bfs::path determine_home_directory()
 }
 
 string url = "http://127.0.0.1:8888/";
-string default_wallet_url = "unix://" + (determine_home_directory() / "legis-wallet" / (string(key_store_executable_name) + ".sock")).string();
+string default_wallet_url = "unix://" + (determine_home_directory() / "led-wallet" / (string(key_store_executable_name) + ".sock")).string();
 string wallet_url; //to be set to default_wallet_url in main
 bool no_verify = false;
 vector<string> headers;
@@ -687,7 +687,7 @@ asset to_asset( account_name code, const string& s ) {
 }
 
 inline asset to_asset( const string& s ) {
-   return to_asset( N(legis.token), s );
+   return to_asset( N(led.token), s );
 }
 
 asset to_dapp_asset( account_name code, const string& s ) {
@@ -1789,7 +1789,7 @@ struct undelegate_bandwidth_subcommand {
 //       list_producers->add_option("newname", newname, localized("The bidding name"))->required();
 //       list_producers->set_callback([this] {
 //          auto rawResult = call(get_table_func, fc::mutable_variant_object("json", true)
-//                                ("code", "legis")("scope", "legis")("table", "namebids")
+//                                ("code", "led")("scope", "led")("table", "namebids")
 //                                ("lower_bound", newname.value)
 //                                ("upper_bound", newname.value + 1)
 //                                // Less than ideal upper_bound usage preserved so cleos can still work with old buggy nodeos versions
@@ -3406,7 +3406,7 @@ int main( int argc, char** argv ) {
    auto setActionPermission = set_action_permission_subcommand(setAction);
 
    // Transfer subcommand
-   string con = "legis.token";
+   string con = "led.token";
    string sender;
    string recipient;
    string amount;
@@ -3829,7 +3829,7 @@ int main( int argc, char** argv ) {
          ("requested", requested_perm_var)
          ("trx", trx_var);
 
-      send_actions({chain::action{accountPermissions, "legis.msig", "propose", variant_to_bin( N(legis.msig), N(propose), args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", "propose", variant_to_bin( N(led.msig), N(propose), args ) }});
    });
 
    //multisig propose transaction
@@ -3869,7 +3869,7 @@ int main( int argc, char** argv ) {
          ("requested", requested_perm_var)
          ("trx", trx_var);
 
-      send_actions({chain::action{accountPermissions, "legis.msig", "propose", variant_to_bin( N(legis.msig), N(propose), args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", "propose", variant_to_bin( N(led.msig), N(propose), args ) }});
    });
 
 
@@ -3882,7 +3882,7 @@ int main( int argc, char** argv ) {
 
    review->set_callback([&] {
       const auto result1 = call(get_table_func, fc::mutable_variant_object("json", true)
-                                 ("code", "legis.msig")
+                                 ("code", "led.msig")
                                  ("scope", proposer)
                                  ("table", "proposal")
                                  ("table_key", "")
@@ -3918,7 +3918,7 @@ int main( int argc, char** argv ) {
 
          try {
             const auto& result2 = call(get_table_func, fc::mutable_variant_object("json", true)
-                                       ("code", "legis.msig")
+                                       ("code", "led.msig")
                                        ("scope", proposer)
                                        ("table", "approvals2")
                                        ("table_key", "")
@@ -3950,7 +3950,7 @@ int main( int argc, char** argv ) {
             }
          } else {
             const auto result3 = call(get_table_func, fc::mutable_variant_object("json", true)
-                                       ("code", "legis.msig")
+                                       ("code", "led.msig")
                                        ("scope", proposer)
                                        ("table", "approvals")
                                        ("table_key", "")
@@ -3983,8 +3983,8 @@ int main( int argc, char** argv ) {
          if( new_multisig ) {
             for( auto& a : provided_approvers ) {
                const auto result4 = call(get_table_func, fc::mutable_variant_object("json", true)
-                                          ("code", "legis.msig")
-                                          ("scope", "legis.msig")
+                                          ("code", "led.msig")
+                                          ("scope", "led.msig")
                                           ("table", "invals")
                                           ("table_key", "")
                                           ("lower_bound", a.first.value)
@@ -4089,7 +4089,7 @@ int main( int argc, char** argv ) {
       }
 
       auto accountPermissions = get_account_permissions(tx_permission, {proposer,config::active_name});
-      send_actions({chain::action{accountPermissions, "legis.msig", action, variant_to_bin( N(legis.msig), action, args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", action, variant_to_bin( N(led.msig), action, args ) }});
    };
 
    // multisig approve
@@ -4119,7 +4119,7 @@ int main( int argc, char** argv ) {
          ("account", invalidator);
 
       auto accountPermissions = get_account_permissions(tx_permission, {invalidator,config::active_name});
-      send_actions({chain::action{accountPermissions, "legis.msig", "invalidate", variant_to_bin( N(legis.msig), "invalidate", args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", "invalidate", variant_to_bin( N(led.msig), "invalidate", args ) }});
    });
 
    // multisig cancel
@@ -4146,7 +4146,7 @@ int main( int argc, char** argv ) {
          ("proposal_name", proposal_name)
          ("canceler", canceler);
 
-      send_actions({chain::action{accountPermissions, "legis.msig", "cancel", variant_to_bin( N(legis.msig), N(cancel), args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", "cancel", variant_to_bin( N(led.msig), N(cancel), args ) }});
       }
    );
 
@@ -4175,7 +4175,7 @@ int main( int argc, char** argv ) {
          ("proposal_name", proposal_name)
          ("executer", executer);
 
-      send_actions({chain::action{accountPermissions, "legis.msig", "exec", variant_to_bin( N(legis.msig), N(exec), args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", "exec", variant_to_bin( N(led.msig), N(exec), args ) }});
       }
    );
 
@@ -4184,7 +4184,7 @@ int main( int argc, char** argv ) {
    wrap->require_subcommand();
 
    // wrap exec
-   string wrap_con = "legis.wrap";
+   string wrap_con = "led.wrap";
    executer = "";
    string trx_to_exec;
    auto wrap_exec = wrap->add_subcommand("exec", localized("Execute a transaction while bypassing authorization checks"));
@@ -4212,7 +4212,7 @@ int main( int argc, char** argv ) {
    });
 
    // system subcommand
-   auto system = app.add_subcommand("system", localized("Send legis.system contract action to the blockchain."), false);
+   auto system = app.add_subcommand("system", localized("Send led.system contract action to the blockchain."), false);
    system->require_subcommand();
 
    auto createAccountSystem = create_account_subcommand( system, false /*simple*/ );

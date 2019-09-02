@@ -14,7 +14,7 @@ fi
 
 bioscontractpath=$BIOS_CONTRACT_PATH
 if [ -z "$bioscontractpath" ]; then
-    bioscontractpath="unittests/contracts/legis.bios"
+    bioscontractpath="unittests/contracts/led.bios"
 fi
 
 wddir=eosio-ignition-wd
@@ -63,7 +63,7 @@ wcmd () {
 }
 
 cacmd () {
-    programs/cleos/cleos  --wallet-url $wdurl --url http://$bioshost:$biosport system newaccount --transfer --stake-net "10000000.0000 SYS" --stake-cpu "10000000.0000 SYS"  --buy-ram "10000000.0000 SYS" legis $* >> $logfile 2>&1
+    programs/cleos/cleos  --wallet-url $wdurl --url http://$bioshost:$biosport system newaccount --transfer --stake-net "10000000.0000 SYS" --stake-cpu "10000000.0000 SYS"  --buy-ram "10000000.0000 SYS" led $* >> $logfile 2>&1
     ecmd system regproducer $1 $2
     ecmd system voteproducer prods $1 $1
 }
@@ -82,46 +82,46 @@ wcmd create --to-console -n ignition
 # ------ DO NOT ALTER THE NEXT LINE -------
 ###INSERT prodkeys
 
-ecmd set contract legis $bioscontractpath legis.bios.wasm legis.bios.abi
+ecmd set contract led $bioscontractpath led.bios.wasm led.bios.abi
 
 # Preactivate all digests
 for digest in $FEATURE_DIGESTS;
 do
-ecmd push action legis activate "{\"feature_digest\":\"$digest\"}" -p legis
+ecmd push action led activate "{\"feature_digest\":\"$digest\"}" -p led
 done
 
 # Create required system accounts
 ecmd create key --to-console
 pubsyskey=`grep "^Public key:" $logfile | tail -1 | sed "s/^Public key://"`
 prisyskey=`grep "^Private key:" $logfile | tail -1 | sed "s/^Private key://"`
-echo legis.* keys: $prisyskey $pubsyskey >> $logfile
+echo led.* keys: $prisyskey $pubsyskey >> $logfile
 wcmd import -n ignition --private-key $prisyskey
-ecmd create account legis legis.bpay $pubsyskey $pubsyskey
-ecmd create account legis legis.msig $pubsyskey $pubsyskey
-ecmd create account legis legis.names $pubsyskey $pubsyskey
-ecmd create account legis legis.ram $pubsyskey $pubsyskey
-ecmd create account legis legis.ramfee $pubsyskey $pubsyskey
-ecmd create account legis legis.saving $pubsyskey $pubsyskey
-ecmd create account legis legis.stake $pubsyskey $pubsyskey
-ecmd create account legis legis.token $pubsyskey $pubsyskey
-ecmd create account legis legis.vpay $pubsyskey $pubsyskey
-ecmd create account legis legis.wrap $pubsyskey $pubsyskey
+ecmd create account led led.bpay $pubsyskey $pubsyskey
+ecmd create account led led.msig $pubsyskey $pubsyskey
+ecmd create account led led.names $pubsyskey $pubsyskey
+ecmd create account led led.ram $pubsyskey $pubsyskey
+ecmd create account led led.ramfee $pubsyskey $pubsyskey
+ecmd create account led led.saving $pubsyskey $pubsyskey
+ecmd create account led led.stake $pubsyskey $pubsyskey
+ecmd create account led led.token $pubsyskey $pubsyskey
+ecmd create account led led.vpay $pubsyskey $pubsyskey
+ecmd create account led led.wrap $pubsyskey $pubsyskey
 
-ecmd set contract legis.token unittests/contracts/legis.token legis.token.wasm legis.token.abi
-ecmd set contract legis.msig unittests/contracts/legis.msig legis.msig.wasm legis.msig.abi
-ecmd set contract legis.wrap unittests/contracts/legis.wrap legis.wrap.wasm legis.wrap.abi
+ecmd set contract led.token unittests/contracts/led.token led.token.wasm led.token.abi
+ecmd set contract led.msig unittests/contracts/led.msig led.msig.wasm led.msig.abi
+ecmd set contract led.wrap unittests/contracts/led.wrap led.wrap.wasm led.wrap.abi
 
 echo ===== Start: $step ============ >> $logfile
-echo executing: cleos --wallet-url $wdurl --url http://$bioshost:$biosport push action legis.token create '[ "legis", "10000000000.0000 SYS" ]' -p legis.token | tee -a $logfile
-echo executing: cleos --wallet-url $wdurl --url http://$bioshost:$biosport push action legis.token issue '[ "legis", "1000000000.0000 SYS", "memo" ]' -p legis | tee -a $logfile
+echo executing: cleos --wallet-url $wdurl --url http://$bioshost:$biosport push action led.token create '[ "led", "10000000000.0000 SYS" ]' -p led.token | tee -a $logfile
+echo executing: cleos --wallet-url $wdurl --url http://$bioshost:$biosport push action led.token issue '[ "led", "1000000000.0000 SYS", "memo" ]' -p led | tee -a $logfile
 echo ----------------------- >> $logfile
-programs/cleos/cleos --wallet-url $wdurl --url http://$bioshost:$biosport push action legis.token create '[ "legis", "10000000000.0000 SYS" ]' -p legis.token >> $logfile 2>&1
-programs/cleos/cleos --wallet-url $wdurl --url http://$bioshost:$biosport push action legis.token issue '[ "legis", "1000000000.0000 SYS", "memo" ]' -p legis >> $logfile 2>&1
+programs/cleos/cleos --wallet-url $wdurl --url http://$bioshost:$biosport push action led.token create '[ "led", "10000000000.0000 SYS" ]' -p led.token >> $logfile 2>&1
+programs/cleos/cleos --wallet-url $wdurl --url http://$bioshost:$biosport push action led.token issue '[ "led", "1000000000.0000 SYS", "memo" ]' -p led >> $logfile 2>&1
 echo ==== End: $step ============== >> $logfile
 step=$(($step + 1))
 
-ecmd set contract legis unittests/contracts/legis.system legis.system.wasm legis.system.abi
-programs/cleos/cleos --wallet-url $wdurl --url http://$bioshost:$biosport push action legis init '[0, "4,SYS"]' -p legis >> $logfile 2>&1
+ecmd set contract led unittests/contracts/led.system led.system.wasm led.system.abi
+programs/cleos/cleos --wallet-url $wdurl --url http://$bioshost:$biosport push action led init '[0, "4,SYS"]' -p led >> $logfile 2>&1
 
 # Manual deployers, add a series of lines below this block that looks like:
 #    cacmd $PRODNAME[0] $OWNERKEY[0] $ACTIVEKEY[0]

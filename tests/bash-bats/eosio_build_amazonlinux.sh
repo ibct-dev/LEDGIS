@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 load helpers/general
-export SCRIPT_LOCATION="scripts/legis_build.sh"
+export SCRIPT_LOCATION="scripts/led_build.sh"
 export TEST_LABEL="[eosio_build_amazonlinux]"
 
 [[ $ARCH == "Linux" ]] || exit 0 # Skip if we're not on linux

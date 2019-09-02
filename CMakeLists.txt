@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.8 )
 
-project( LEGIS )
+project( LED )
 include(CTest) # suppresses DartConfiguration.tcl error
 
 enable_testing()
@@ -22,7 +22,7 @@ include( SetupTargetMacros )
 include( InstallDirectoryPermissions )
 include( MASSigning )
 
-set( BLOCKCHAIN_NAME "LEGIS" )
+set( BLOCKCHAIN_NAME "LED" )
 set( CMAKE_CXX_STANDARD 17 )
 
 set( CMAKE_CXX_EXTENSIONS ON )
@@ -42,7 +42,7 @@ endif()
 set( CLI_CLIENT_EXECUTABLE_NAME cleos )
 set( NODE_EXECUTABLE_NAME nodeos )
 set( KEY_STORE_EXECUTABLE_NAME keosd )
-set( GUI_CLIENT_EXECUTABLE_NAME legis )
+set( GUI_CLIENT_EXECUTABLE_NAME led )
 set( CUSTOM_URL_SCHEME "gcs" )
 set( INSTALLER_APP_ID "68ad7005-8eee-49c9-95ce-9eed97e5b347" )
 
@@ -122,7 +122,7 @@ link_libraries(Threads::Threads)
 
 if( WIN32 )
 
-    message( STATUS "Configuring LEGIS on WIN32")
+    message( STATUS "Configuring LED on WIN32")
     set( DB_VERSION 60 )
     set( BDB_STATIC_LIBS 1 )
 
@@ -157,11 +157,11 @@ else( WIN32 ) # Apple AND Linux
 
     if( APPLE )
         # Apple Specific Options Here
-        message( STATUS "Configuring LEGIS on OS X" )
+        message( STATUS "Configuring LED on OS X" )
         set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS} -Wall -Wno-deprecated-declarations" )
     else( APPLE )
         # Linux Specific Options Here
-        message( STATUS "Configuring LEGIS on Linux" )
+        message( STATUS "Configuring LED on Linux" )
         set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS} -Wall" )
         if ( FULL_STATIC_BUILD )
           set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libstdc++ -static-libgcc")
@@ -186,7 +186,7 @@ else( WIN32 ) # Apple AND Linux
 
 endif( WIN32 )
 
-set(ENABLE_COVERAGE_TESTING FALSE CACHE BOOL "Build LEGIS for code coverage analysis")
+set(ENABLE_COVERAGE_TESTING FALSE CACHE BOOL "Build LED for code coverage analysis")
 
 if(ENABLE_COVERAGE_TESTING)
   SET(CMAKE_CXX_FLAGS "--coverage ${CMAKE_CXX_FLAGS}")
@@ -222,7 +222,7 @@ endif()
 message( STATUS "Using '${CHAIN_INIT_TIMESTAMP}' as chain init timestamp" )
 
 if ("${ROOT_ACCOUNT}" STREQUAL "")
-    set(ROOT_ACCOUNT "legis")
+    set(ROOT_ACCOUNT "led")
 endif()
 
 message( STATUS "Using '${ROOT_ACCOUNT}' as root account" )

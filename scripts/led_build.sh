@@ -9,7 +9,7 @@ function usage() {
   -o TYPE     Build <Debug|Release|RelWithDebInfo|MinSizeRel> (default: Release)
   -s NAME     Core Symbol Name <1-7 characters> (default: SYS)
   -b DIR      Use pre-built boost in DIR
-  -i DIR      Directory to use for installing dependencies & LEGIS (default: $HOME)
+  -i DIR      Directory to use for installing dependencies & LED (default: $HOME)
   -y          Noninteractive mode (answers yes to every prompt)
   -c          Enable Code Coverage
   -d          Generate Doxygen
@@ -91,7 +91,7 @@ cd $( dirname "${BASH_SOURCE[0]}" )/..
 . ./scripts/helpers/eosio.sh
 
 $VERBOSE && echo "Build Script Version: ${SCRIPT_VERSION}"
-echo "LEGIS Version: ${EOSIO_VERSION_FULL}"
+echo "LED Version: ${EOSIO_VERSION_FULL}"
 echo "$( date -u )"
 echo "User: ${CURRENT_USER}"
 # echo "git head id: %s" "$( cat .git/refs/heads/master )"
@@ -167,7 +167,7 @@ fi
 execute bash -c "sed -e 's~@~$OPT_DIR~g' $SCRIPT_DIR/pinned_toolchain.cmake &> $BUILD_DIR/pinned_toolchain.cmake"
 
 echo "${COLOR_CYAN}====================================================================================="
-echo "======================= ${COLOR_WHITE}Starting LEGIS Dependency Install${COLOR_CYAN} ===========================${COLOR_NC}"
+echo "======================= ${COLOR_WHITE}Starting LED Dependency Install${COLOR_CYAN} ===========================${COLOR_NC}"
 execute cd $SRC_DIR
 set_system_vars # JOBS, Memory, disk space available, etc
 echo "Architecture: ${ARCH}"
@@ -176,7 +176,7 @@ execute cd $REPO_ROOT
 
 echo ""
 echo "${COLOR_CYAN}========================================================================"
-echo "======================= ${COLOR_WHITE}Starting LEGIS Build${COLOR_CYAN} ===========================${COLOR_NC}"
+echo "======================= ${COLOR_WHITE}Starting LED Build${COLOR_CYAN} ===========================${COLOR_NC}"
 if $VERBOSE; then
    echo "CXX: $CXX"
    echo "CC: $CC"
@@ -208,9 +208,9 @@ echo "    ${COLOR_RED}███████╗╚██████╗██║ 
 echo "    ${COLOR_RED}╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ "
 echo ""
 
-echo "${COLOR_GREEN}LEGIS has been successfully built. $(($TIME_END/3600)):$(($TIME_END%3600/60)):$(($TIME_END%60))"
-echo "${COLOR_GREEN}You can now install using: ./scripts/legis_install.sh${COLOR_NC}"
-echo "${COLOR_YELLOW}Uninstall with: ./scripts/legis_uninstall.sh${COLOR_NC}"
+echo "${COLOR_GREEN}LED has been successfully built. $(($TIME_END/3600)):$(($TIME_END%3600/60)):$(($TIME_END%60))"
+echo "${COLOR_GREEN}You can now install using: ./scripts/led_install.sh${COLOR_NC}"
+echo "${COLOR_YELLOW}Uninstall with: ./scripts/led_uninstall.sh${COLOR_NC}"
 
 echo ""
 echo "${COLOR_CYAN}If you wish to perform tests to ensure functional code:${COLOR_NC}"

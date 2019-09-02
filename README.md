@@ -1,25 +1,25 @@
 
-# LEGIS - EOS chrome infrastructure
+# LED - EOS chrome infrastructure
 
-#### LEGIS Setting
+#### LED Setting
 
 ```sh
-$ git clone https://github.com/ibct-dev/LEGIS --recursive
-$ cd LEGIS
-$ sudo ./scripts/legis_build -s "SYSTEM TOKEN NAME"
-$ sudo ./scripts/legis_install
+$ git clone https://github.com/ibct-dev/LED --recursive
+$ cd LED
+$ sudo ./scripts/led_build -s "SYSTEM TOKEN NAME"
+$ sudo ./scripts/led_install
 ```
 
 #### Build Script Uninstall
 
-If you have previously installed LEGIS using build scripts, you can execute `legis_uninstall.sh` to uninstall.
+If you have previously installed LED using build scripts, you can execute `led_uninstall.sh` to uninstall.
 - Passing `-y` will answer yes to all prompts (does not remove data directories)
 - Passing `-f` will remove data directories (be very careful with this)
 - Passing in `-i` allows you to specify where your eosio installation is located
 
 #### Supported Operating Systems
 
-LEGIS currently supports the following operating systems:  
+LED currently supports the following operating systems:  
 1. Amazon Linux 2
 2. CentOS 7
 3. Ubuntu 18.04
@@ -27,7 +27,7 @@ LEGIS currently supports the following operating systems:
 
 
 
-#### LEGIS features
+#### LED features
 
 1. Free Rate Limited Transactions
 2. Low Latency Block confirmation (0.5 seconds)

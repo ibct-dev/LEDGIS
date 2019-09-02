@@ -320,9 +320,9 @@ try:
     if hashNum != 0:
         errorExit("FAILURE - get code currency1111 failed", raw=True)
 
-    contractDir="unittests/contracts/legis.token"
-    wasmFile="legis.token.wasm"
-    abiFile="legis.token.abi"
+    contractDir="unittests/contracts/led.token"
+    wasmFile="led.token.wasm"
+    abiFile="led.token.abi"
     Print("Publish contract")
     trans=node.publishContract(currencyAccount.name, contractDir, wasmFile, abiFile, waitForTransBlock=True)
     if trans is None:
