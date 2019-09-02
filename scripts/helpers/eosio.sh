@@ -7,15 +7,15 @@ if [[ -z "${NAME}" ]]; then
         # Obtain OS NAME, and VERSION
         . /etc/os-release
     elif [[ $ARCH == "Darwin" ]]; then export NAME=$(sw_vers -productName)
-    else echo " ${COLOR_RED}- ECRIO is not supported for your Architecture!${COLOR_NC}" && exit 1
+    else echo " ${COLOR_RED}- LED is not supported for your Architecture!${COLOR_NC}" && exit 1
     fi
 fi
 
 # Setup yum and apt variables
 if [[ $NAME =~ "Amazon Linux" ]] || [[ $NAME == "CentOS Linux" ]]; then
-    if ! YUM=$( command -v yum 2>/dev/null ); then echo "${COLOR_RED}YUM must be installed to compile ECRIO${COLOR_NC}" && exit 1; fi
+    if ! YUM=$( command -v yum 2>/dev/null ); then echo "${COLOR_RED}YUM must be installed to compile LED${COLOR_NC}" && exit 1; fi
 elif [[ $NAME == "Ubuntu" ]]; then
-    if ! APTGET=$( command -v apt-get 2>/dev/null ); then echo "${COLOR_RED}APT-GET must be installed to compile ECRIO${COLOR_NC}" && exit 1; fi
+    if ! APTGET=$( command -v apt-get 2>/dev/null ); then echo "${COLOR_RED}APT-GET must be installed to compile LED${COLOR_NC}" && exit 1; fi
 fi
 
 # Obtain dependency versions; Must come first in the script
@@ -33,7 +33,7 @@ function setup() {
         echo "BOOST_LOCATION: ${BOOST_LOCATION}"
         echo "INSTALL_LOCATION: ${INSTALL_LOCATION}"
         echo "BUILD_DIR: ${BUILD_DIR}"
-        echo "ECRIO_INSTALL_DIR: ${EOSIO_INSTALL_DIR}"
+        echo "LED_INSTALL_DIR: ${EOSIO_INSTALL_DIR}"
         echo "NONINTERACTIVE: ${NONINTERACTIVE}"
         echo "PROCEED: ${PROCEED}"
         echo "ENABLE_COVERAGE_TESTING: ${ENABLE_COVERAGE_TESTING}"
@@ -53,14 +53,16 @@ function setup() {
     execute mkdir -p $VAR_DIR/log
     execute mkdir -p $ETC_DIR
     execute mkdir -p $LIB_DIR
-    execute mkdir -p $MONGODB_LOG_DIR
-    execute mkdir -p $MONGODB_DATA_DIR
+    if $ENABLE_MONGO; then
+        execute mkdir -p $MONGODB_LOG_DIR
+        execute mkdir -p $MONGODB_DATA_DIR
+    fi
 }
 
 function ensure-which() {
   if ! which ls &>/dev/null; then
     while true; do
-      [[ $NONINTERACTIVE == false ]] && printf "${COLOR_YELLOW}ECRIO compiler checks require the 'which' package: Would you like for us to install it? (y/n)?${COLOR_NC}" && read -p " " PROCEED
+      [[ $NONINTERACTIVE == false ]] && printf "${COLOR_YELLOW}LED compiler checks require the 'which' package: Would you like for us to install it? (y/n)?${COLOR_NC}" && read -p " " PROCEED
       echo ""
       case $PROCEED in
           "" ) echo "What would you like to do?";;
@@ -75,7 +77,7 @@ function ensure-which() {
 # Prompt user for installation directory.
 function install-directory-prompt() {
   if [[ -z $INSTALL_LOCATION ]]; then
-    echo "No installation location was specified. Please provide the location where ECRIO is installed."
+    echo "No installation location was specified. Please provide the location where LED is installed."
     while true; do
       [[ $NONINTERACTIVE == false ]] && printf "${COLOR_YELLOW}Do you wish to use the default location? ${EOSIO_INSTALL_DIR}? (y/n)${COLOR_NC}" && read -p " " PROCEED
       echo ""
@@ -92,15 +94,17 @@ function install-directory-prompt() {
       esac
     done
   else
-    export EOSIO_INSTALL_DIR=${INSTALL_LOCATION}
+    # Support relative paths : https://github.com/EOSIO/eos/issues/7560
+    [[ ! $INSTALL_LOCATION =~ ^\/ ]] && export INSTALL_LOCATION="${CURRENT_WORKING_DIR}/$INSTALL_LOCATION"
+    export EOSIO_INSTALL_DIR="$INSTALL_LOCATION"
   fi
   . ./scripts/.build_vars
-  echo "ECRIO will be installed to: ${EOSIO_INSTALL_DIR}"
+  echo "led will be installed to: ${EOSIO_INSTALL_DIR}"
 }
 
 function previous-install-prompt() {
   if [[ -d $EOSIO_INSTALL_DIR ]]; then
-    echo "ECRIO has already been installed into ${EOSIO_INSTALL_DIR}... It's suggested that you ecrio_uninstall.sh before re-running this script."
+    echo "LED has already been installed into ${EOSIO_INSTALL_DIR}... It's suggested that you led_uninstall.sh before re-running this script."
     while true; do
       [[ $NONINTERACTIVE == false ]] && printf "${COLOR_YELLOW}Do you wish to proceed anyway? (y/n)${COLOR_NC}" && read -p " " PROCEED
       echo ""
@@ -121,7 +125,7 @@ function resources() {
 }
 
 function print_supported_linux_distros_and_exit() {
-   echo "On Linux the ECRIO build script only supports Amazon, Centos, and Ubuntu."
+   echo "On Linux the LED build script only supports Amazon, Centos, and Ubuntu."
    echo "Please install on a supported version of one of these Linux distributions."
    echo "https://aws.amazon.com/amazon-linux-ami/"
    echo "https://www.centos.org/"

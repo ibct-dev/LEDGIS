@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 load helpers/general
 
-SCRIPT_LOCATION="scripts/ecrio_build.sh"
+SCRIPT_LOCATION="scripts/led_build.sh"
 TEST_LABEL="[eosio_build]"
 
 ###################################################################
@@ -14,7 +14,7 @@ TEST_LABEL="[eosio_build]"
     if [[ $NAME =~ "Amazon Linux" ]] || [[ $NAME == "CentOS Linux" ]]; then
         # which package isn't installed
         uninstall-package which WETRUN &>/dev/null
-        run bash -c "printf \"y\ny\nn\nn\n\" | ./scripts/ecrio_build.sh"
+        run bash -c "printf \"y\ny\nn\nn\n\" | ./scripts/led_build.sh"
         [[ ! -z $(echo "${output}" | grep "EOSIO compiler checks require the 'which'") ]] || exit
     fi
 
@@ -27,7 +27,7 @@ TEST_LABEL="[eosio_build]"
     fi 
 
     cd ./scripts # Also test that we can run the script from a directory other than the root
-    run bash -c "./ecrio_build.sh -y -P"
+    run bash -c "./led_build.sh -y -P"
     [[ ! -z $(echo "${output}" | grep "PIN_COMPILER: true") ]] || exit
     # Ensure build-essentials is installed so we can compile cmake, clang, boost, etc
     if [[ $NAME == "Ubuntu" ]]; then
@@ -57,6 +57,11 @@ TEST_LABEL="[eosio_build]"
     run bash -c "printf \"y\ny\nn\nn\n\"| ./$SCRIPT_LOCATION -i /NEWPATH -P"
     [[ ! -z $(echo "${output}" | grep "EOSIO_INSTALL_DIR: /NEWPATH") ]] || exit
     [[ ! -z $(echo "${output}" | grep "TEMP_DIR: ${HOME}/tmp") ]] || exit
+        ### Relative path support
+        cd $TEMP_DIR # Also test that we can run the script from a directory other than the root
+        run bash -c "printf \"y\ny\nn\nn\n\"| ${CURRENT_WORKING_DIR}/$SCRIPT_LOCATION -i NEWPATH -P"
+        [[ ! -z $(echo "${output}" | grep "EOSIO_INSTALL_DIR: $TEMP_DIR/NEWPATH") ]] || exit
+        cd $CURRENT_WORKING_DIR
     ## -c
     run bash -c "printf \"y\ny\nn\nn\n\"| ./$SCRIPT_LOCATION -c -P"
     [[ ! -z $(echo "${output}" | grep "ENABLE_COVERAGE_TESTING: true") ]] || exit

@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 load helpers/general
 
-export SCRIPT_LOCATION="scripts/ecrio_build.sh"
+export SCRIPT_LOCATION="scripts/led_build.sh"
 export TEST_LABEL="[eosio_build_centos]"
 
 [[ $ARCH == "Linux" ]] || exit 0 # Exit 0 is required for pipeline
@@ -28,14 +28,14 @@ export TEST_LABEL="[eosio_build_centos]"
     install-package devtoolset-8 WETRUN &>/dev/null
     # Ensure SCL and devtoolset-8 for c++ binary installation
     run bash -c "printf \"y\n%.0s\" {1..100}| ./${SCRIPT_LOCATION} -i /NEWPATH"
-    [[ ! -z $(echo "${output}" | grep "centos-release-scl-2-3.el7.centos.noarch found") ]] || exit
+    [[ ! -z $(echo "${output}" | grep "centos-release-.*centos.noarch found") ]] || exit
     [[ ! -z $(echo "${output}" | grep "devtoolset-8.* found") ]] || exit
     [[ ! -z $(echo "${output}" | grep "Executing: source /opt/rh/devtoolset-8/enable") ]] || exit
     [[ ! -z $(echo "${output}" | grep "Executing: make -j${JOBS}") ]] || exit
     [[ ! -z $(echo "${output}" | grep "Starting EOSIO Dependency Install") ]] || exit
     [[ ! -z $(echo "${output}" | grep "Executing: eval /usr/bin/yum -y update") ]] || exit
     [[ ! -z $(echo "${output}" | grep "Python36 successfully enabled") ]] || exit
-    [[ -z $(echo "${output}" | grep "-   NOT found.") ]] || exit
+    [[ -z $(echo "${output}" | grep "-   NOT found") ]] || exit
     [[ ! -z $(echo "${output}" | grep "Ensuring CMAKE") ]] || exit
     [[ ! -z $(echo "${output}" | grep /NEWPATH.*/src/boost) ]] || exit
     [[ ! -z $(echo "${output}" | grep "Starting EOSIO Build") ]] || exit

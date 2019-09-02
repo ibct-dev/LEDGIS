@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 load helpers/general
 
-export SCRIPT_LOCATION="scripts/ecrio_build.sh"
+export SCRIPT_LOCATION="scripts/led_build.sh"
 export TEST_LABEL="[eosio_build_ubuntu]"
 
 [[ $ARCH == "Linux" ]] || exit 0 # Exit 0 is required for pipeline
@@ -29,7 +29,7 @@ export TEST_LABEL="[eosio_build_ubuntu]"
     run bash -c "printf \"y\n%.0s\" {1..100} | ./$SCRIPT_LOCATION -i /NEWPATH"
     [[ ! -z $(echo "${output}" | grep "Executing: make -j${JOBS}") ]] || exit
     [[ ! -z $(echo "${output}" | grep "Starting EOSIO Dependency Install") ]] || exit
-    [[ ! -z $(echo "${output}" | grep python.*found) ]] || exit
+    [[ ! -z $(echo "${output}" | grep python.*) ]] || exit
     [[ ! -z $(echo "${output}" | grep make.*NOT.*found) ]] || exit
     [[ ! -z $(echo "${output}" | grep /NEWPATH.*/src/boost) ]] || exit
     [[ ! -z $(echo "${output}" | grep "make -j${CPU_CORES}") ]] || exit
@@ -37,8 +37,8 @@ export TEST_LABEL="[eosio_build_ubuntu]"
     if [[ "$(echo ${VERSION_ID})" == "18.04" ]]; then
         [[ ! -z $(echo "${output}" | grep llvm-4.0.*found) ]] || exit
     fi
-    [[ -z $(echo "${output}" | grep "-   NOT found.") ]] || exit
-    [[ -z $(echo "${output}" | grep lcov.*found.) ]] || exit
+    [[ -z $(echo "${output}" | grep "-   NOT found") ]] || exit
+    [[ -z $(echo "${output}" | grep lcov.*found) ]] || exit
     [[ ! -z $(echo "${output}" | grep "EOSIO has been successfully built") ]] || exit
     [[ "$(echo ${VERSION_ID})" == "16.04" ]] && apt autoremove build-essential -y || uninstall-package clang WETRUN
 }

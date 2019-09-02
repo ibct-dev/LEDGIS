@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 load helpers/general
 
-export SCRIPT_LOCATION="scripts/ecrio_build.sh"
+export SCRIPT_LOCATION="scripts/led_build.sh"
 export TEST_LABEL="[eosio_build_darwin]"
 
 [[ $ARCH == "Darwin" ]] || exit 0 # Exit 0 is required for pipeline
@@ -29,7 +29,7 @@ export TEST_LABEL="[eosio_build_darwin]"
     ### Make sure deps are loaded properly
     [[ ! -z $(echo "${output}" | grep "Starting EOSIO Dependency Install") ]] || exit
     [[ ! -z $(echo "${output}" | grep "Executing: /usr/bin/xcode-select --install") ]] || exit
-    [[ -z $(echo "${output}" | grep "-   NOT found.") ]] || exit
+    [[ -z $(echo "${output}" | grep " -   NOT found") ]] || exit
     rm -f $CMAKE
     [[ ! -z $(echo "${output}" | grep "[Updating HomeBrew]") ]] || exit
     [[ ! -z $(echo "${output}" | grep "brew tap eosio/eosio") ]] || exit

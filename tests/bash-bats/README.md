@@ -5,7 +5,7 @@ For each bash script we have, there should be a separate .sh file within `REPO_R
 ### Usage notes:
 
 - BATS requires that you install greadlink: `brew install coreutils`
-- DRYRUN=true is required for all tests and automatically enabled. You can use this when you're manually running ecrio_build.sh (`DRYRUN=true VERBOSE=true ./scripts/ecrio_build.sh`)
+- DRYRUN=true is required for all tests and automatically enabled. You can use this when you're manually running led_build.sh (`DRYRUN=true VERBOSE=true ./scripts/led_build.sh`)
 - execute-always gets around DRYRUN and runs stuff anyway (which installation uses this)
 - To run all tests: 
     ```

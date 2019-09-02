@@ -166,7 +166,7 @@ bfs::path determine_home_directory()
 }
 
 string url = "http://127.0.0.1:8888/";
-string default_wallet_url = "unix://" + (determine_home_directory() / "eosio-wallet" / (string(key_store_executable_name) + ".sock")).string();
+string default_wallet_url = "unix://" + (determine_home_directory() / "led-wallet" / (string(key_store_executable_name) + ".sock")).string();
 string wallet_url; //to be set to default_wallet_url in main
 bool no_verify = false;
 vector<string> headers;
@@ -687,7 +687,7 @@ asset to_asset( account_name code, const string& s ) {
 }
 
 inline asset to_asset( const string& s ) {
-   return to_asset( N(ecrio.token), s );
+   return to_asset( N(led.token), s );
 }
 
 asset to_dapp_asset( account_name code, const string& s ) {
@@ -977,78 +977,88 @@ CLI::callback_t obsoleted_option_host_port = [](CLI::results_t) {
    return false;
 };
 
-struct register_producer_subcommand {
+struct register_interior_subcommand {
    string producer_str;
    string producer_key_str;
-   string contract_str;
-   string transfer_ratio;
+   string election_promise;
    string url;
    uint16_t loc = 0;
    string city;
    string logo;
 
-   register_producer_subcommand(CLI::App* actionRoot) {
-      auto register_producer = actionRoot->add_subcommand("regproducer", localized("Register a new producer"));
-      register_producer->add_option("account", producer_str, localized("The account to register as a producer"))->required();
-      register_producer->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
-      register_producer->add_option("contract", contract_str, localized("The producer's dapp token contract"))->required();
-      register_producer->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
-      register_producer->add_option("url", url, localized("url where info about producer can be found"), true);
-      register_producer->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
-      register_producer->add_option("city", city, localized("a city representing a producer"), true);
-      register_producer->add_option("logo", logo, localized("logo representing the producer"), true);
-      add_standard_transaction_options(register_producer, "account@active");
+   register_interior_subcommand(CLI::App* actionRoot) {
+      auto register_interior = actionRoot->add_subcommand("reginterior", localized("Register a new producer"));
+      register_interior->add_option("account", producer_str, localized("The account to register as a producer(The producer's dapp token contract)"))->required();
+      register_interior->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
+      register_interior->add_option("election_promise", election_promise, localized("Election promise of interior"))->required();
+      register_interior->add_option("url", url, localized("url where info about producer can be found"), true);
+      register_interior->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
+      register_interior->add_option("city", city, localized("a city representing a producer"), true);
+      register_interior->add_option("logo", logo, localized("logo representing the producer"), true);
+      add_standard_transaction_options(register_interior, "account@active");
 
-      register_producer->set_callback([this] {
+      register_interior->set_callback([this] {
          public_key_type producer_key;
          try {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
          fc::variant regprod_var = fc::mutable_variant_object()
-                  ("producer", producer_str)
+                  ("interior", producer_str)
                   ("producer_key", producer_key)
-                  ("contract", contract_str)
-                  ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio))
+                  ("election_promise", election_promise)
                   ("url", url)
                   ("location", loc)
                   ("city", city)
                   ("logo_256", logo);
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          
-         send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
+         send_actions({create_action(accountPermissions, config::system_account_name, N(reginterior), regprod_var)});
       });
    }
 };
 
-// struct update_producer_subcommand {
-//    string producer_str;
-//    string producer_key_str;
-//    string transfer_ratio;
-//    string url;
-//    uint16_t loc = 0;
+struct register_frontier_subcommand {
+   string producer_str;
+   string producer_key_str;
+   string transfer_ratio;
+   string category;
+   string url;
+   uint16_t loc = 0;
+   string city;
+   string logo;
 
-//    update_producer_subcommand(CLI::App* actionRoot) {
-//       auto update_producer = actionRoot->add_subcommand("updateprod", localized("Update a producer"));
-//       update_producer->add_option("account", producer_str, localized("The account to update as a producer"))->required();
-//       update_producer->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
-//       update_producer->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
-//       update_producer->add_option("url", url, localized("url where info about producer can be found"), true);
-//       update_producer->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
-//       add_standard_transaction_options(update_producer, "account@active");
+   register_frontier_subcommand(CLI::App* actionRoot) {
+      auto register_frontier = actionRoot->add_subcommand("regfrontier", localized("Register a new producer"));
+      register_frontier->add_option("account", producer_str, localized("The account to register as a producer(The producer's dapp token contract)"))->required();
+      register_frontier->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
+      register_frontier->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
+      register_frontier->add_option("category", category, localized("Category of frontier's DApp"))->required();
+      register_frontier->add_option("url", url, localized("url where info about producer can be found"), true);
+      register_frontier->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
+      register_frontier->add_option("city", city, localized("a city representing a producer"), true);
+      register_frontier->add_option("logo", logo, localized("logo representing the producer"), true);
+      add_standard_transaction_options(register_frontier, "account@active");
 
-
-//       update_producer->set_callback([this] {
-//          public_key_type producer_key;
-//          try {
-//             producer_key = public_key_type(producer_key_str);
-//          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
-
-//          auto updateprod_var = updateprod_variant(producer_str, producer_key, transfer_ratio, url, loc );
-//          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
-//          send_actions({create_action(accountPermissions, config::system_account_name, N(updateprod), updateprod_var)});
-//       });
-//    }
-// };
+      register_frontier->set_callback([this] {
+         public_key_type producer_key;
+         try {
+            producer_key = public_key_type(producer_key_str);
+         } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
+         fc::variant regprod_var = fc::mutable_variant_object()
+                  ("frontier", producer_str)
+                  ("producer_key", producer_key)
+                  ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio))
+                  ("category", category)
+                  ("url", url)
+                  ("location", loc)
+                  ("city", city)
+                  ("logo_256", logo);
+         auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
+         
+         send_actions({create_action(accountPermissions, config::system_account_name, N(regfrontier), regprod_var)});
+      });
+   }
+};
 
 struct create_account_subcommand {
    string creator;
@@ -1155,25 +1165,22 @@ struct unregister_producer_subcommand {
    }
 };
 
-struct change_token_subcommand {
+struct change_ratio_subcommand {
    string producer_str;
-   string contract_str;
    string transfer_ratio;
 
-   change_token_subcommand(CLI::App* actionRoot) {
-      auto change_token = actionRoot->add_subcommand("changetoken", localized("change producer dapp token"));
-      change_token->add_option("account", producer_str, localized("The producer's account"))->required();
-      change_token->add_option("contract", contract_str, localized("The producer's dapp token contract"))->required();
-      change_token->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
-      add_standard_transaction_options(change_token, "account@active");
+   change_ratio_subcommand(CLI::App* actionRoot) {
+      auto change_ratio = actionRoot->add_subcommand("changeratio", localized("change producer dapp token"));
+      change_ratio->add_option("account", producer_str, localized("The producer's account(The producer's dapp token contract)"))->required();
+      change_ratio->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
+      add_standard_transaction_options(change_ratio, "account@active");
 
-      change_token->set_callback([this] {
+      change_ratio->set_callback([this] {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("producer", producer_str)
-                  ("contract", contract_str)
-                  ("transfer_ratio", transfer_ratio);
+                  ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio));
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
-         send_actions({create_action(accountPermissions, config::system_account_name, N(changetoken), act_payload)});
+         send_actions({create_action(accountPermissions, config::system_account_name, N(changeratio), act_payload)});
       });
    }
 };
@@ -1192,7 +1199,7 @@ struct vote_producer_proxy_subcommand {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("voter", voter_str)
                   ("proxy", proxy_str)
-                  ("producers", std::vector<account_name>{});
+                  ("interiors", std::vector<account_name>{});
          auto accountPermissions = get_account_permissions(tx_permission, {voter_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(voteproducer), act_payload)});
       });
@@ -1206,7 +1213,7 @@ struct vote_producers_subcommand {
    vote_producers_subcommand(CLI::App* actionRoot) {
       auto vote_producers = actionRoot->add_subcommand("prods", localized("Vote for one or more producers"));
       vote_producers->add_option("voter", voter_str, localized("The voting account"))->required();
-      vote_producers->add_option("producers", producer_names, localized("The account(s) to vote for. All options from this position and following will be treated as the producer list."))->required();
+      vote_producers->add_option("interiors", producer_names, localized("The account(s) to vote for. All options from this position and following will be treated as the producer list."))->required();
       add_standard_transaction_options(vote_producers, "voter@active");
 
       vote_producers->set_callback([this] {
@@ -1216,7 +1223,7 @@ struct vote_producers_subcommand {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("voter", voter_str)
                   ("proxy", "")
-                  ("producers", producer_names);
+                  ("interiors", producer_names);
          auto accountPermissions = get_account_permissions(tx_permission, {voter_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(voteproducer), act_payload)});
       });
@@ -1752,67 +1759,67 @@ struct undelegate_bandwidth_subcommand {
    }
 };
 
-struct bidname_subcommand {
-   string bidder_str;
-   string newname_str;
-   string bid_amount;
-   bidname_subcommand(CLI::App *actionRoot) {
-      auto bidname = actionRoot->add_subcommand("bidname", localized("Name bidding"));
-      bidname->add_option("bidder", bidder_str, localized("The bidding account"))->required();
-      bidname->add_option("newname", newname_str, localized("The bidding name"))->required();
-      bidname->add_option("bid", bid_amount, localized("The amount of tokens to bid"))->required();
-      add_standard_transaction_options(bidname, "bidder@active");
-      bidname->set_callback([this] {
-         fc::variant act_payload = fc::mutable_variant_object()
-                  ("bidder", bidder_str)
-                  ("newname", newname_str)
-                  ("bid", to_asset(bid_amount));
-         auto accountPermissions = get_account_permissions(tx_permission, {bidder_str,config::active_name});
-         send_actions({create_action(accountPermissions, config::system_account_name, N(bidname), act_payload)});
-      });
-   }
-};
+// struct bidname_subcommand {
+//    string bidder_str;
+//    string newname_str;
+//    string bid_amount;
+//    bidname_subcommand(CLI::App *actionRoot) {
+//       auto bidname = actionRoot->add_subcommand("bidname", localized("Name bidding"));
+//       bidname->add_option("bidder", bidder_str, localized("The bidding account"))->required();
+//       bidname->add_option("newname", newname_str, localized("The bidding name"))->required();
+//       bidname->add_option("bid", bid_amount, localized("The amount of tokens to bid"))->required();
+//       add_standard_transaction_options(bidname, "bidder@active");
+//       bidname->set_callback([this] {
+//          fc::variant act_payload = fc::mutable_variant_object()
+//                   ("bidder", bidder_str)
+//                   ("newname", newname_str)
+//                   ("bid", to_asset(bid_amount));
+//          auto accountPermissions = get_account_permissions(tx_permission, {bidder_str,config::active_name});
+//          send_actions({create_action(accountPermissions, config::system_account_name, N(bidname), act_payload)});
+//       });
+//    }
+// };
 
-struct bidname_info_subcommand {
-   bool print_json = false;
-   name newname;
-   bidname_info_subcommand(CLI::App* actionRoot) {
-      auto list_producers = actionRoot->add_subcommand("bidnameinfo", localized("Get bidname info"));
-      list_producers->add_flag("--json,-j", print_json, localized("Output in JSON format"));
-      list_producers->add_option("newname", newname, localized("The bidding name"))->required();
-      list_producers->set_callback([this] {
-         auto rawResult = call(get_table_func, fc::mutable_variant_object("json", true)
-                               ("code", "ecrio")("scope", "ecrio")("table", "namebids")
-                               ("lower_bound", newname.value)
-                               ("upper_bound", newname.value + 1)
-                               // Less than ideal upper_bound usage preserved so cleos can still work with old buggy nodeos versions
-                               // Change to newname.value when cleos no longer needs to support nodeos versions older than 1.5.0
-                               ("limit", 1));
-         if ( print_json ) {
-            std::cout << fc::json::to_pretty_string(rawResult) << std::endl;
-            return;
-         }
-         auto result = rawResult.as<eosio::chain_apis::read_only::get_table_rows_result>();
-         // Condition in if statement below can simply be res.rows.empty() when cleos no longer needs to support nodeos versions older than 1.5.0
-         if( result.rows.empty() || result.rows[0].get_object()["newname"].as_string() != newname.to_string() ) {
-            std::cout << "No bidname record found" << std::endl;
-            return;
-         }
-         const auto& row = result.rows[0];
-         string time = row["last_bid_time"].as_string();
-         try {
-             time = (string)fc::time_point(fc::microseconds(to_uint64(time)));
-         } catch (fc::parse_error_exception&) {
-         }
-         int64_t bid = row["high_bid"].as_int64();
-         std::cout << std::left << std::setw(18) << "bidname:" << std::right << std::setw(24) << row["newname"].as_string() << "\n"
-                   << std::left << std::setw(18) << "highest bidder:" << std::right << std::setw(24) << row["high_bidder"].as_string() << "\n"
-                   << std::left << std::setw(18) << "highest bid:" << std::right << std::setw(24) << (bid > 0 ? bid : -bid) << "\n"
-                   << std::left << std::setw(18) << "last bid time:" << std::right << std::setw(24) << time << std::endl;
-         if (bid < 0) std::cout << "This auction has already closed" << std::endl;
-      });
-   }
-};
+// struct bidname_info_subcommand {
+//    bool print_json = false;
+//    name newname;
+//    bidname_info_subcommand(CLI::App* actionRoot) {
+//       auto list_producers = actionRoot->add_subcommand("bidnameinfo", localized("Get bidname info"));
+//       list_producers->add_flag("--json,-j", print_json, localized("Output in JSON format"));
+//       list_producers->add_option("newname", newname, localized("The bidding name"))->required();
+//       list_producers->set_callback([this] {
+//          auto rawResult = call(get_table_func, fc::mutable_variant_object("json", true)
+//                                ("code", "led")("scope", "led")("table", "namebids")
+//                                ("lower_bound", newname.value)
+//                                ("upper_bound", newname.value + 1)
+//                                // Less than ideal upper_bound usage preserved so cleos can still work with old buggy nodeos versions
+//                                // Change to newname.value when cleos no longer needs to support nodeos versions older than 1.5.0
+//                                ("limit", 1));
+//          if ( print_json ) {
+//             std::cout << fc::json::to_pretty_string(rawResult) << std::endl;
+//             return;
+//          }
+//          auto result = rawResult.as<eosio::chain_apis::read_only::get_table_rows_result>();
+//          // Condition in if statement below can simply be res.rows.empty() when cleos no longer needs to support nodeos versions older than 1.5.0
+//          if( result.rows.empty() || result.rows[0].get_object()["newname"].as_string() != newname.to_string() ) {
+//             std::cout << "No bidname record found" << std::endl;
+//             return;
+//          }
+//          const auto& row = result.rows[0];
+//          string time = row["last_bid_time"].as_string();
+//          try {
+//              time = (string)fc::time_point(fc::microseconds(to_uint64(time)));
+//          } catch (fc::parse_error_exception&) {
+//          }
+//          int64_t bid = row["high_bid"].as_int64();
+//          std::cout << std::left << std::setw(18) << "bidname:" << std::right << std::setw(24) << row["newname"].as_string() << "\n"
+//                    << std::left << std::setw(18) << "highest bidder:" << std::right << std::setw(24) << row["high_bidder"].as_string() << "\n"
+//                    << std::left << std::setw(18) << "highest bid:" << std::right << std::setw(24) << (bid > 0 ? bid : -bid) << "\n"
+//                    << std::left << std::setw(18) << "last bid time:" << std::right << std::setw(24) << time << std::endl;
+//          if (bid < 0) std::cout << "This auction has already closed" << std::endl;
+//       });
+//    }
+// };
 
 struct list_bw_subcommand {
    eosio::name account;
@@ -1922,28 +1929,28 @@ struct regproxy_subcommand {
    string philosophy;
    string background;
    string website;
+   string url;
+   string city;
    string logo_256;
 
    regproxy_subcommand(CLI::App* actionRoot) {
       auto register_proxy = actionRoot->add_subcommand("regproxy", localized("Register an account as a proxy (for voting)"));
       register_proxy->add_option("proxy", proxy, localized("The proxy account to register"))->required();
-      register_proxy->add_option("name", name, localized("proxy's human readable name"), true);
-      register_proxy->add_option("slogan", slogan, localized("proxy's short description"), true);
-      register_proxy->add_option("philosophy", philosophy, localized("proxy's voting philosophy"), true);
-      register_proxy->add_option("background", background, localized("who is the proxy?"), true);
-      register_proxy->add_option("website", website, localized("url to website"), true);
+      register_proxy->add_option("slogan", slogan, localized("proxy's short description"))->required();
+      register_proxy->add_option("background", background, localized("who is the proxy?"))->required();
+      register_proxy->add_option("url", url, localized("url to website"), true);
+      register_proxy->add_option("city", city, localized("a city representing a proxy"), true);
       register_proxy->add_option("logo_256", logo_256, localized("url to an image with the size of 256 x 256 px"), true);
       add_standard_transaction_options(register_proxy, "proxy@active");
 
       register_proxy->set_callback([this] {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("proxy", proxy)
-                  ("name", true)
-                  ("slogan", true)
-                  ("philosophy", true)
-                  ("background", true)
-                  ("website", true)
-                  ("logo_256", true);
+                  ("slogan", slogan)
+                  ("background", background)
+                  ("url", url)
+                  ("city", city)
+                  ("logo_256", logo_256);
          auto accountPermissions = get_account_permissions(tx_permission, {proxy,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproxy), act_payload)});
       });
@@ -1962,7 +1969,7 @@ struct unregproxy_subcommand {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("proxy", proxy);
          auto accountPermissions = get_account_permissions(tx_permission, {proxy,config::active_name});
-         send_actions({create_action(accountPermissions, config::system_account_name, N(regproxy), act_payload)});
+         send_actions({create_action(accountPermissions, config::system_account_name, N(unregproxy), act_payload)});
       });
    }
 };
@@ -2137,21 +2144,21 @@ struct cancelrexorder_subcommand {
    }
 };
 
-struct rentcpu_subcommand {
+struct leasecpu_subcommand {
    string from_str;
    string receiver_str;
    string loan_payment_str;
    string loan_fund_str;
-   const name act_name{ N(rentcpu) };
+   const name act_name{ N(leasecpu) };
 
-   rentcpu_subcommand(CLI::App* actionRoot) {
-      auto rentcpu = actionRoot->add_subcommand("rentcpu", localized("Rent CPU bandwidth for 30 days"));
-      rentcpu->add_option("from",         from_str,         localized("Account paying rent fees"))->required();
-      rentcpu->add_option("receiver",     receiver_str,     localized("Account to whom rented CPU bandwidth is staked"))->required();
-      rentcpu->add_option("loan_payment", loan_payment_str, localized("Loan fee to be paid, used to calculate amount of rented bandwidth"))->required();
-      rentcpu->add_option("loan_fund",    loan_fund_str,    localized("Loan fund to be used in automatic renewal, can be 0 tokens"))->required();
-      add_standard_transaction_options(rentcpu, "from@active");
-      rentcpu->set_callback([this] {
+   leasecpu_subcommand(CLI::App* actionRoot) {
+      auto leasecpu = actionRoot->add_subcommand("leasecpu", localized("Lease CPU bandwidth for 30 days"));
+      leasecpu->add_option("from",         from_str,         localized("Account paying lease fees"))->required();
+      leasecpu->add_option("receiver",     receiver_str,     localized("Account to whom leased CPU bandwidth is staked"))->required();
+      leasecpu->add_option("loan_payment", loan_payment_str, localized("Loan fee to be paid, used to calculate amount of leased bandwidth"))->required();
+      leasecpu->add_option("loan_fund",    loan_fund_str,    localized("Loan fund to be used in automatic renewal, can be 0 tokens"))->required();
+      add_standard_transaction_options(leasecpu, "from@active");
+      leasecpu->set_callback([this] {
          fc::variant act_payload = fc::mutable_variant_object()
             ("from",         from_str)
             ("receiver",     receiver_str)
@@ -2163,21 +2170,21 @@ struct rentcpu_subcommand {
    }
 };
 
-struct rentnet_subcommand {
+struct leasenet_subcommand {
    string from_str;
    string receiver_str;
    string loan_payment_str;
    string loan_fund_str;
-   const name act_name{ N(rentnet) };
+   const name act_name{ N(leasenet) };
 
-   rentnet_subcommand(CLI::App* actionRoot) {
-      auto rentnet = actionRoot->add_subcommand("rentnet", localized("Rent Network bandwidth for 30 days"));
-      rentnet->add_option("from",         from_str,         localized("Account paying rent fees"))->required();
-      rentnet->add_option("receiver",     receiver_str,     localized("Account to whom rented Network bandwidth is staked"))->required();
-      rentnet->add_option("loan_payment", loan_payment_str, localized("Loan fee to be paid, used to calculate amount of rented bandwidth"))->required();
-      rentnet->add_option("loan_fund",    loan_fund_str,    localized("Loan fund to be used in automatic renewal, can be 0 tokens"))->required();
-      add_standard_transaction_options(rentnet, "from@active");
-      rentnet->set_callback([this] {
+   leasenet_subcommand(CLI::App* actionRoot) {
+      auto leasenet = actionRoot->add_subcommand("leasenet", localized("Lease Network bandwidth for 30 days"));
+      leasenet->add_option("from",         from_str,         localized("Account paying lease fees"))->required();
+      leasenet->add_option("receiver",     receiver_str,     localized("Account to whom leaseed Network bandwidth is staked"))->required();
+      leasenet->add_option("loan_payment", loan_payment_str, localized("Loan fee to be paid, used to calculate amount of leased bandwidth"))->required();
+      leasenet->add_option("loan_fund",    loan_fund_str,    localized("Loan fund to be used in automatic renewal, can be 0 tokens"))->required();
+      add_standard_transaction_options(leasenet, "from@active");
+      leasenet->set_callback([this] {
          fc::variant act_payload = fc::mutable_variant_object()
             ("from",         from_str)
             ("receiver",     receiver_str)
@@ -3399,7 +3406,7 @@ int main( int argc, char** argv ) {
    auto setActionPermission = set_action_permission_subcommand(setAction);
 
    // Transfer subcommand
-   string con = "ecrio.token";
+   string con = "led.token";
    string sender;
    string recipient;
    string amount;
@@ -3822,7 +3829,7 @@ int main( int argc, char** argv ) {
          ("requested", requested_perm_var)
          ("trx", trx_var);
 
-      send_actions({chain::action{accountPermissions, "ecrio.msig", "propose", variant_to_bin( N(ecrio.msig), N(propose), args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", "propose", variant_to_bin( N(led.msig), N(propose), args ) }});
    });
 
    //multisig propose transaction
@@ -3862,7 +3869,7 @@ int main( int argc, char** argv ) {
          ("requested", requested_perm_var)
          ("trx", trx_var);
 
-      send_actions({chain::action{accountPermissions, "ecrio.msig", "propose", variant_to_bin( N(ecrio.msig), N(propose), args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", "propose", variant_to_bin( N(led.msig), N(propose), args ) }});
    });
 
 
@@ -3875,7 +3882,7 @@ int main( int argc, char** argv ) {
 
    review->set_callback([&] {
       const auto result1 = call(get_table_func, fc::mutable_variant_object("json", true)
-                                 ("code", "ecrio.msig")
+                                 ("code", "led.msig")
                                  ("scope", proposer)
                                  ("table", "proposal")
                                  ("table_key", "")
@@ -3911,7 +3918,7 @@ int main( int argc, char** argv ) {
 
          try {
             const auto& result2 = call(get_table_func, fc::mutable_variant_object("json", true)
-                                       ("code", "ecrio.msig")
+                                       ("code", "led.msig")
                                        ("scope", proposer)
                                        ("table", "approvals2")
                                        ("table_key", "")
@@ -3943,7 +3950,7 @@ int main( int argc, char** argv ) {
             }
          } else {
             const auto result3 = call(get_table_func, fc::mutable_variant_object("json", true)
-                                       ("code", "ecrio.msig")
+                                       ("code", "led.msig")
                                        ("scope", proposer)
                                        ("table", "approvals")
                                        ("table_key", "")
@@ -3976,8 +3983,8 @@ int main( int argc, char** argv ) {
          if( new_multisig ) {
             for( auto& a : provided_approvers ) {
                const auto result4 = call(get_table_func, fc::mutable_variant_object("json", true)
-                                          ("code", "ecrio.msig")
-                                          ("scope", "ecrio.msig")
+                                          ("code", "led.msig")
+                                          ("scope", "led.msig")
                                           ("table", "invals")
                                           ("table_key", "")
                                           ("lower_bound", a.first.value)
@@ -4082,7 +4089,7 @@ int main( int argc, char** argv ) {
       }
 
       auto accountPermissions = get_account_permissions(tx_permission, {proposer,config::active_name});
-      send_actions({chain::action{accountPermissions, "ecrio.msig", action, variant_to_bin( N(ecrio.msig), action, args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", action, variant_to_bin( N(led.msig), action, args ) }});
    };
 
    // multisig approve
@@ -4112,7 +4119,7 @@ int main( int argc, char** argv ) {
          ("account", invalidator);
 
       auto accountPermissions = get_account_permissions(tx_permission, {invalidator,config::active_name});
-      send_actions({chain::action{accountPermissions, "ecrio.msig", "invalidate", variant_to_bin( N(ecrio.msig), "invalidate", args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", "invalidate", variant_to_bin( N(led.msig), "invalidate", args ) }});
    });
 
    // multisig cancel
@@ -4139,7 +4146,7 @@ int main( int argc, char** argv ) {
          ("proposal_name", proposal_name)
          ("canceler", canceler);
 
-      send_actions({chain::action{accountPermissions, "ecrio.msig", "cancel", variant_to_bin( N(ecrio.msig), N(cancel), args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", "cancel", variant_to_bin( N(led.msig), N(cancel), args ) }});
       }
    );
 
@@ -4168,7 +4175,7 @@ int main( int argc, char** argv ) {
          ("proposal_name", proposal_name)
          ("executer", executer);
 
-      send_actions({chain::action{accountPermissions, "ecrio.msig", "exec", variant_to_bin( N(ecrio.msig), N(exec), args ) }});
+      send_actions({chain::action{accountPermissions, "led.msig", "exec", variant_to_bin( N(led.msig), N(exec), args ) }});
       }
    );
 
@@ -4177,7 +4184,7 @@ int main( int argc, char** argv ) {
    wrap->require_subcommand();
 
    // wrap exec
-   string wrap_con = "ecrio.wrap";
+   string wrap_con = "led.wrap";
    executer = "";
    string trx_to_exec;
    auto wrap_exec = wrap->add_subcommand("exec", localized("Execute a transaction while bypassing authorization checks"));
@@ -4205,15 +4212,16 @@ int main( int argc, char** argv ) {
    });
 
    // system subcommand
-   auto system = app.add_subcommand("system", localized("Send ecrio.system contract action to the blockchain."), false);
+   auto system = app.add_subcommand("system", localized("Send led.system contract action to the blockchain."), false);
    system->require_subcommand();
 
    auto createAccountSystem = create_account_subcommand( system, false /*simple*/ );
 
-   auto registerProducer = register_producer_subcommand(system);
+   auto registerFrontier = register_frontier_subcommand(system);
+   auto registerInterior = register_interior_subcommand(system);
    // auto updateProducer = update_producer_subcommand(system);
    auto unregisterProducer = unregister_producer_subcommand(system);
-   auto changetoken = change_token_subcommand(system);
+   auto changeratio = change_ratio_subcommand(system);
 
    auto voteProducer = system->add_subcommand("voteproducer", localized("Vote for a producer"));
    voteProducer->require_subcommand();
@@ -4237,8 +4245,8 @@ int main( int argc, char** argv ) {
    auto delegateBandWidth = delegate_bandwidth_subcommand(system);
    auto undelegateBandWidth = undelegate_bandwidth_subcommand(system);
    auto listBandWidth = list_bw_subcommand(system);
-   auto bidname = bidname_subcommand(system);
-   auto bidnameinfo = bidname_info_subcommand(system);
+   // auto bidname = bidname_subcommand(system);
+   // auto bidnameinfo = bidname_info_subcommand(system);
 
    auto buyram = buyram_subcommand(system);
    auto sellram = sellram_subcommand(system);
@@ -4261,8 +4269,8 @@ int main( int argc, char** argv ) {
    auto cancelrexorder = cancelrexorder_subcommand(rex);
    auto mvtosavings    = mvtosavings_subcommand(rex);
    auto mvfromsavings  = mvfrsavings_subcommand(rex);
-   auto rentcpu        = rentcpu_subcommand(rex);
-   auto rentnet        = rentnet_subcommand(rex);
+   auto leasecpu        = leasecpu_subcommand(rex);
+   auto leasenet        = leasenet_subcommand(rex);
    auto fundcpuloan    = fundcpuloan_subcommand(rex);
    auto fundnetloan    = fundnetloan_subcommand(rex);
    auto defcpuloan     = defcpuloan_subcommand(rex);

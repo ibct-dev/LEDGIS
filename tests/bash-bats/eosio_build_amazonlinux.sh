@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 load helpers/general
-export SCRIPT_LOCATION="scripts/ecrio_build.sh"
+export SCRIPT_LOCATION="scripts/led_build.sh"
 export TEST_LABEL="[eosio_build_amazonlinux]"
 
 [[ $ARCH == "Linux" ]] || exit 0 # Skip if we're not on linux
@@ -30,11 +30,11 @@ export TEST_LABEL="[eosio_build_amazonlinux]"
     [[ ! -z $(echo "${output}" | grep "Starting EOSIO Dependency Install") ]] || exit
     [[ ! -z $(echo "${output}" | grep "Executing: eval /usr/bin/yum -y update") ]] || exit
     if [[ $NAME == "Amazon Linux" ]]; then
-        [[ ! -z $(echo "${output}" | grep "libstdc++.*found!") ]] || exit
+        [[ ! -z $(echo "${output}" | grep "libstdc++") ]] || exit
     elif [[ $NAME == "Amazon Linux AMI" ]]; then
         [[ ! -z $(echo "${output}" | grep "make.*found!") ]] || exit
     fi
-    [[ ! -z $(echo "${output}" | grep "sudo.*NOT.*found.") ]] || exit
+    [[ ! -z $(echo "${output}" | grep "sudo.*NOT.*found") ]] || exit
     [[ -z $(echo "${output}" | grep "-   NOT found.") ]] || exit
     [[ ! -z $(echo "${output}" | grep /NEWPATH*/src/boost) ]] || exit
     [[ ! -z $(echo "${output}" | grep "Starting EOSIO Build") ]] || exit

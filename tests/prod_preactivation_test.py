@@ -107,7 +107,7 @@ try:
     Print("found digest ", digest, " of PREACTIVATE_FEATURE")
 
     node0 = cluster.getNode(0)
-    contract="ecrio.bios"
+    contract="led.bios"
     contractDir="unittests/contracts/%s" % (contract)
     wasmFile="%s.wasm" % (contract)
     abiFile="%s.abi" % (contract)

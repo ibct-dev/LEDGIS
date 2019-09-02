@@ -69,15 +69,15 @@ class whitelist_blacklist_tester {
 
          if( !bootstrap ) return;
 
-         chain->create_accounts({N(ecrio.token), N(alice), N(bob), N(charlie)});
-         chain->set_code(N(ecrio.token), contracts::ecrio_token_wasm() );
-         chain->set_abi(N(ecrio.token), contracts::ecrio_token_abi().data() );
-         chain->push_action( N(ecrio.token), N(create), N(ecrio.token), mvo()
-              ( "issuer", "ecrio.token" )
+         chain->create_accounts({N(led.token), N(alice), N(bob), N(charlie)});
+         chain->set_code(N(led.token), contracts::led_token_wasm() );
+         chain->set_abi(N(led.token), contracts::led_token_abi().data() );
+         chain->push_action( N(led.token), N(create), N(led.token), mvo()
+              ( "issuer", "led.token" )
               ( "maximum_supply", "1000000.00 TOK" )
          );
-         chain->push_action( N(ecrio.token), N(issue), N(ecrio.token), mvo()
-              ( "to", "ecrio.token" )
+         chain->push_action( N(led.token), N(issue), N(led.token), mvo()
+              ( "to", "led.token" )
               ( "quantity", "1000000.00 TOK" )
               ( "memo", "issue" )
          );
@@ -92,7 +92,7 @@ class whitelist_blacklist_tester {
       }
 
       transaction_trace_ptr transfer( account_name from, account_name to, string quantity = "1.00 TOK" ) {
-         return chain->push_action( N(ecrio.token), N(transfer), from, mvo()
+         return chain->push_action( N(led.token), N(transfer), from, mvo()
             ( "from", from )
             ( "to", to )
             ( "quantity", quantity )
@@ -125,10 +125,10 @@ BOOST_AUTO_TEST_SUITE(whitelist_blacklist_tests)
 
 BOOST_AUTO_TEST_CASE( actor_whitelist ) { try {
    whitelist_blacklist_tester<> test;
-   test.actor_whitelist = {config::system_account_name, N(ecrio.token), N(alice)};
+   test.actor_whitelist = {config::system_account_name, N(led.token), N(alice)};
    test.init();
 
-   test.transfer( N(ecrio.token), N(alice), "1000.00 TOK" );
+   test.transfer( N(led.token), N(alice), "1000.00 TOK" );
 
    test.transfer( N(alice), N(bob),  "100.00 TOK" );
 
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE( actor_whitelist ) { try {
                        );
    signed_transaction trx;
    trx.actions.emplace_back( vector<permission_level>{{N(alice),config::active_name}, {N(bob),config::active_name}},
-                             N(ecrio.token), N(transfer),
+                             N(led.token), N(transfer),
                              fc::raw::pack(transfer_args{
                                .from  = N(alice),
                                .to    = N(bob),
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE( actor_blacklist ) { try {
    test.actor_blacklist = {N(bob)};
    test.init();
 
-   test.transfer( N(ecrio.token), N(alice), "1000.00 TOK" );
+   test.transfer( N(led.token), N(alice), "1000.00 TOK" );
 
    test.transfer( N(alice), N(bob),  "100.00 TOK" );
 
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE( actor_blacklist ) { try {
 
    signed_transaction trx;
    trx.actions.emplace_back( vector<permission_level>{{N(alice),config::active_name}, {N(bob),config::active_name}},
-                             N(ecrio.token), N(transfer),
+                             N(led.token), N(transfer),
                              fc::raw::pack(transfer_args{
                                 .from  = N(alice),
                                 .to    = N(bob),
@@ -192,12 +192,12 @@ BOOST_AUTO_TEST_CASE( actor_blacklist ) { try {
 
 BOOST_AUTO_TEST_CASE( contract_whitelist ) { try {
    whitelist_blacklist_tester<> test;
-   test.contract_whitelist = {config::system_account_name, N(ecrio.token), N(bob)};
+   test.contract_whitelist = {config::system_account_name, N(led.token), N(bob)};
    test.init();
 
-   test.transfer( N(ecrio.token), N(alice), "1000.00 TOK" );
+   test.transfer( N(led.token), N(alice), "1000.00 TOK" );
 
-   test.transfer( N(alice), N(ecrio.token) );
+   test.transfer( N(alice), N(led.token) );
 
    test.transfer( N(alice), N(bob) );
    test.transfer( N(alice), N(charlie), "100.00 TOK" );
@@ -206,13 +206,13 @@ BOOST_AUTO_TEST_CASE( contract_whitelist ) { try {
 
    test.chain->produce_blocks();
 
-   test.chain->set_code(N(bob), contracts::ecrio_token_wasm() );
-   test.chain->set_abi(N(bob), contracts::ecrio_token_abi().data() );
+   test.chain->set_code(N(bob), contracts::led_token_wasm() );
+   test.chain->set_abi(N(bob), contracts::led_token_abi().data() );
 
    test.chain->produce_blocks();
 
-   test.chain->set_code(N(charlie), contracts::ecrio_token_wasm() );
-   test.chain->set_abi(N(charlie), contracts::ecrio_token_abi().data() );
+   test.chain->set_code(N(charlie), contracts::led_token_wasm() );
+   test.chain->set_abi(N(charlie), contracts::led_token_abi().data() );
 
    test.chain->produce_blocks();
 
@@ -244,9 +244,9 @@ BOOST_AUTO_TEST_CASE( contract_blacklist ) { try {
    test.contract_blacklist = {N(charlie)};
    test.init();
 
-   test.transfer( N(ecrio.token), N(alice), "1000.00 TOK" );
+   test.transfer( N(led.token), N(alice), "1000.00 TOK" );
 
-   test.transfer( N(alice), N(ecrio.token) );
+   test.transfer( N(alice), N(led.token) );
 
    test.transfer( N(alice), N(bob) );
    test.transfer( N(alice), N(charlie), "100.00 TOK" );
@@ -255,13 +255,13 @@ BOOST_AUTO_TEST_CASE( contract_blacklist ) { try {
 
    test.chain->produce_blocks();
 
-   test.chain->set_code(N(bob), contracts::ecrio_token_wasm() );
-   test.chain->set_abi(N(bob), contracts::ecrio_token_abi().data() );
+   test.chain->set_code(N(bob), contracts::led_token_wasm() );
+   test.chain->set_abi(N(bob), contracts::led_token_abi().data() );
 
    test.chain->produce_blocks();
 
-   test.chain->set_code(N(charlie), contracts::ecrio_token_wasm() );
-   test.chain->set_abi(N(charlie), contracts::ecrio_token_abi().data() );
+   test.chain->set_code(N(charlie), contracts::led_token_wasm() );
+   test.chain->set_abi(N(charlie), contracts::led_token_abi().data() );
 
    test.chain->produce_blocks();
 
@@ -290,21 +290,21 @@ BOOST_AUTO_TEST_CASE( contract_blacklist ) { try {
 
 BOOST_AUTO_TEST_CASE( action_blacklist ) { try {
    whitelist_blacklist_tester<> test;
-   test.contract_whitelist = {config::system_account_name, N(ecrio.token), N(bob), N(charlie)};
+   test.contract_whitelist = {config::system_account_name, N(led.token), N(bob), N(charlie)};
    test.action_blacklist = {{N(charlie), N(create)}};
    test.init();
 
-   test.transfer( N(ecrio.token), N(alice), "1000.00 TOK" );
+   test.transfer( N(led.token), N(alice), "1000.00 TOK" );
 
    test.chain->produce_blocks();
 
-   test.chain->set_code(N(bob), contracts::ecrio_token_wasm() );
-   test.chain->set_abi(N(bob), contracts::ecrio_token_abi().data() );
+   test.chain->set_code(N(bob), contracts::led_token_wasm() );
+   test.chain->set_abi(N(bob), contracts::led_token_abi().data() );
 
    test.chain->produce_blocks();
 
-   test.chain->set_code(N(charlie), contracts::ecrio_token_wasm() );
-   test.chain->set_abi(N(charlie), contracts::ecrio_token_abi().data() );
+   test.chain->set_code(N(charlie), contracts::led_token_wasm() );
+   test.chain->set_abi(N(charlie), contracts::led_token_abi().data() );
 
    test.chain->produce_blocks();
 
@@ -331,7 +331,7 @@ BOOST_AUTO_TEST_CASE( blacklist_eosio ) { try {
    whitelist_blacklist_tester<tester> tester1;
    tester1.init();
    tester1.chain->produce_blocks();
-   tester1.chain->set_code(config::system_account_name, contracts::ecrio_token_wasm() );
+   tester1.chain->set_code(config::system_account_name, contracts::led_token_wasm() );
    tester1.chain->produce_blocks();
    tester1.shutdown();
    tester1.contract_blacklist = {config::system_account_name};

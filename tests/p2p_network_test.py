@@ -133,9 +133,9 @@ if not walletMgr.importKey(defproduceraAccount, defproduceraWallet):
 
 node0=cluster.getNode(0)
 
-# ecrio should have the same key as defproducera
-ecrio = copy.copy(defproduceraAccount)
-ecrio.name = "ecrio"
+# led should have the same key as defproducera
+led = copy.copy(defproduceraAccount)
+led.name = "led"
 
 Print("Info of each node:")
 for i in range(len(hosts)):
@@ -145,19 +145,19 @@ for i in range(len(hosts)):
     Print("host %s: %s" % (hosts[i], trans))
 
 
-wasmFile="ecrio.system.wasm"
-abiFile="ecrio.system.abi"
+wasmFile="led.system.wasm"
+abiFile="led.system.abi"
 Print("\nPush system contract %s %s" % (wasmFile, abiFile))
-trans=node0.publishContract(ecrio.name, wasmFile, abiFile, waitForTransBlock=True)
+trans=node0.publishContract(led.name, wasmFile, abiFile, waitForTransBlock=True)
 if trans is None:
-    Utils.errorExit("Failed to publish ecrio.system.")
+    Utils.errorExit("Failed to publish led.system.")
 else:
     Print("transaction id %s" % (node0.getTransId(trans)))
 
 try:
     maxIndex = module.maxIndex()
     for cmdInd in range(maxIndex):
-        (transIdList, checkacct, expBal, errmsg) = module.execute(cmdInd, node0, testeraAccount, ecrio)
+        (transIdList, checkacct, expBal, errmsg) = module.execute(cmdInd, node0, testeraAccount, led)
 
         if len(transIdList) == 0 and len(checkacct) == 0:
             errorExit("failed to execute command in host %s:%s" % (hosts[0], errmsg))

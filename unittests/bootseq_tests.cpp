@@ -70,8 +70,8 @@ std::vector<genesis_account> test_genesis( {
 class bootseq_tester : public TESTER {
 public:
    void deploy_contract( bool call_init = true ) {
-      set_code( config::system_account_name, contracts::ecrio_system_wasm() );
-      set_abi( config::system_account_name, contracts::ecrio_system_abi().data() );
+      set_code( config::system_account_name, contracts::led_system_wasm() );
+      set_abi( config::system_account_name, contracts::led_system_abi().data() );
       if( call_init ) {
          base_tester::push_action(config::system_account_name, N(init),
                                   config::system_account_name,  mutable_variant_object()
@@ -167,7 +167,7 @@ public:
     }
 
     asset get_balance( const account_name& act ) {
-         return get_currency_balance(N(ecrio.token), symbol(CORE_SYMBOL), act);
+         return get_currency_balance(N(led.token), symbol(CORE_SYMBOL), act);
     }
 
     void set_code_abi(const account_name& account, const vector<uint8_t>& wasm, const char* abi, const private_key_type* signer = nullptr) {
@@ -192,39 +192,39 @@ BOOST_AUTO_TEST_SUITE(bootseq_tests)
 BOOST_FIXTURE_TEST_CASE( bootseq_test, bootseq_tester ) {
     try {
 
-        // Create ecrio.msig and ecrio.token
-        create_accounts({N(ecrio.msig), N(ecrio.token), N(ecrio.ram), N(ecrio.ramfee), N(ecrio.stake), N(ecrio.vpay), N(ecrio.bpay), N(ecrio.saving) });
+        // Create led.msig and led.token
+        create_accounts({N(led.msig), N(led.token), N(led.ram), N(led.ramfee), N(led.stake), N(led.vpay), N(led.bpay), N(led.saving) });
         // Set code for the following accounts:
-        //  - ecrio (code: ecrio.bios) (already set by tester constructor)
-        //  - ecrio.msig (code: ecrio.msig)
-        //  - ecrio.token (code: ecrio.token)
-        // set_code_abi(N(ecrio.msig), contracts::ecrio_msig_wasm(), contracts::ecrio_msig_abi().data());//, &ecrio_active_pk);
-        // set_code_abi(N(ecrio.token), contracts::ecrio_token_wasm(), contracts::ecrio_token_abi().data()); //, &ecrio_active_pk);
+        //  - led (code: led.bios) (already set by tester constructor)
+        //  - led.msig (code: led.msig)
+        //  - led.token (code: led.token)
+        // set_code_abi(N(led.msig), contracts::led_msig_wasm(), contracts::led_msig_abi().data());//, &led_active_pk);
+        // set_code_abi(N(led.token), contracts::led_token_wasm(), contracts::led_token_abi().data()); //, &led_active_pk);
 
-        set_code_abi(N(ecrio.msig),
-                     contracts::ecrio_msig_wasm(),
-                     contracts::ecrio_msig_abi().data());//, &ecrio_active_pk);
-        set_code_abi(N(ecrio.token),
-                     contracts::ecrio_token_wasm(),
-                     contracts::ecrio_token_abi().data()); //, &ecrio_active_pk);
+        set_code_abi(N(led.msig),
+                     contracts::led_msig_wasm(),
+                     contracts::led_msig_abi().data());//, &led_active_pk);
+        set_code_abi(N(led.token),
+                     contracts::led_token_wasm(),
+                     contracts::led_token_abi().data()); //, &led_active_pk);
 
-        // Set privileged for ecrio.msig and ecrio.token
-        set_privileged(N(ecrio.msig));
-        set_privileged(N(ecrio.token));
+        // Set privileged for led.msig and led.token
+        set_privileged(N(led.msig));
+        set_privileged(N(led.token));
 
-        // Verify ecrio.msig and ecrio.token is privileged
-        const auto& ecrio_msig_acc = get<account_metadata_object, by_name>(N(ecrio.msig));
-        BOOST_TEST(ecrio_msig_acc.is_privileged() == true);
-        const auto& ecrio_token_acc = get<account_metadata_object, by_name>(N(ecrio.token));
-        BOOST_TEST(ecrio_token_acc.is_privileged() == true);
+        // Verify led.msig and led.token is privileged
+        const auto& led_msig_acc = get<account_metadata_object, by_name>(N(led.msig));
+        BOOST_TEST(led_msig_acc.is_privileged() == true);
+        const auto& led_token_acc = get<account_metadata_object, by_name>(N(led.token));
+        BOOST_TEST(led_token_acc.is_privileged() == true);
 
 
-        // Create SYS tokens in ecrio.token, set its manager as ecrio
+        // Create SYS tokens in led.token, set its manager as led
         auto max_supply = core_from_string("10000000000.0000"); /// 1x larger than 1B initial tokens
         auto initial_supply = core_from_string("1000000000.0000"); /// 1x larger than 1B initial tokens
-        create_currency(N(ecrio.token), config::system_account_name, max_supply);
-        // Issue the genesis supply of 1 billion SYS tokens to ecrio.system
-        issue(N(ecrio.token), config::system_account_name, config::system_account_name, initial_supply);
+        create_currency(N(led.token), config::system_account_name, max_supply);
+        // Issue the genesis supply of 1 billion SYS tokens to led.system
+        issue(N(led.token), config::system_account_name, config::system_account_name, initial_supply);
 
         auto actual = get_balance(config::system_account_name);
         BOOST_REQUIRE_EQUAL(initial_supply, actual);
@@ -246,7 +246,7 @@ BOOST_FIXTURE_TEST_CASE( bootseq_test, bootseq_tester ) {
            auto r = buyram(config::system_account_name, a.aname, asset(ram));
            BOOST_REQUIRE( !r->except_ptr );
 
-           r = delegate_bandwidth(N(ecrio.stake), a.aname, asset(net), asset(cpu));
+           r = delegate_bandwidth(N(led.stake), a.aname, asset(net), asset(cpu));
            BOOST_REQUIRE( !r->except_ptr );
         }
 
@@ -286,7 +286,7 @@ BOOST_FIXTURE_TEST_CASE( bootseq_test, bootseq_tester ) {
         produce_blocks_for_n_rounds(2); // 2 rounds since new producer schedule is set when the first block of next round is irreversible
         auto active_schedule = control->head_block_state()->active_schedule;
         BOOST_TEST(active_schedule.producers.size() == 1u);
-        BOOST_TEST(active_schedule.producers.front().producer_name == "ecrio");
+        BOOST_TEST(active_schedule.producers.front().producer_name == "led");
 
         // Spend some time so the producer pay pool is filled by the inflation rate
         produce_min_num_of_blocks_to_spend_time_wo_inactive_prod(fc::seconds(30 * 24 * 3600)); // 30 days

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -eo pipefail
-SCRIPT_VERSION=3.0
+
+SCRIPT_VERSION=3.1
 
 function usage() {
    printf "Usage: $0 OPTION...
@@ -8,7 +9,7 @@ function usage() {
   -o TYPE     Build <Debug|Release|RelWithDebInfo|MinSizeRel> (default: Release)
   -s NAME     Core Symbol Name <1-7 characters> (default: SYS)
   -b DIR      Use pre-built boost in DIR
-  -i DIR      Directory to use for installing dependencies & ECRIO (default: $HOME)
+  -i DIR      Directory to use for installing dependencies & LED (default: $HOME)
   -y          Noninteractive mode (answers yes to every prompt)
   -c          Enable Code Coverage
   -d          Generate Doxygen
@@ -81,6 +82,8 @@ if [ $# -ne 0 ]; then
    done
 fi
 
+export CURRENT_WORKING_DIR=$(pwd) # relative path support
+
 # Ensure we're in the repo root and not inside of scripts
 cd $( dirname "${BASH_SOURCE[0]}" )/..
 
@@ -88,7 +91,7 @@ cd $( dirname "${BASH_SOURCE[0]}" )/..
 . ./scripts/helpers/eosio.sh
 
 $VERBOSE && echo "Build Script Version: ${SCRIPT_VERSION}"
-echo "ECRIO Version: ${EOSIO_VERSION_FULL}"
+echo "LED Version: ${EOSIO_VERSION_FULL}"
 echo "$( date -u )"
 echo "User: ${CURRENT_USER}"
 # echo "git head id: %s" "$( cat .git/refs/heads/master )"
@@ -117,7 +120,17 @@ execute cd $REPO_ROOT
 ensure-submodules-up-to-date
 
 # Check if cmake already exists
-( [[ -z "${CMAKE}" ]] && [[ ! -z $(command -v cmake 2>/dev/null) ]] ) && export CMAKE=$(command -v cmake 2>/dev/null)
+( [[ -z "${CMAKE}" ]] && [[ ! -z $(command -v cmake 2>/dev/null) ]] ) && export CMAKE=$(command -v cmake 2>/dev/null) && export CMAKE_CURRENT_VERSION=$($CMAKE --version | grep -E "cmake version[[:blank:]]*" | sed 's/.*cmake version //g')
+# If it exists, check that it's > required version + 
+if [[ ! -z $CMAKE_CURRENT_VERSION ]] && [[ $((10#$( echo $CMAKE_CURRENT_VERSION | awk -F. '{ printf("%03d%03d%03d\n", $1,$2,$3); }' ))) -lt $((10#$( echo $CMAKE_REQUIRED_VERSION | awk -F. '{ printf("%03d%03d%03d\n", $1,$2,$3); }' ))) ]]; then
+   export CMAKE=
+   if [[ $ARCH == 'Darwin' ]]; then
+      echo "${COLOR_RED}The currently installed cmake version ($CMAKE_CURRENT_VERSION) is less than the required version ($CMAKE_REQUIRED_VERSION). Cannot proceed."
+      exit 1
+   else
+      echo "${COLOR_YELLOW}The currently installed cmake version ($CMAKE_CURRENT_VERSION) is less than the required version ($CMAKE_REQUIRED_VERSION). We will be installing $CMAKE_VERSION.${COLOR_NC}"
+   fi
+fi
 
 # Use existing cmake on system (either global or specific to eosio)
 # Setup based on architecture
@@ -154,7 +167,7 @@ fi
 execute bash -c "sed -e 's~@~$OPT_DIR~g' $SCRIPT_DIR/pinned_toolchain.cmake &> $BUILD_DIR/pinned_toolchain.cmake"
 
 echo "${COLOR_CYAN}====================================================================================="
-echo "======================= ${COLOR_WHITE}Starting ECRIO Dependency Install${COLOR_CYAN} ===========================${COLOR_NC}"
+echo "======================= ${COLOR_WHITE}Starting LED Dependency Install${COLOR_CYAN} ===========================${COLOR_NC}"
 execute cd $SRC_DIR
 set_system_vars # JOBS, Memory, disk space available, etc
 echo "Architecture: ${ARCH}"
@@ -163,7 +176,7 @@ execute cd $REPO_ROOT
 
 echo ""
 echo "${COLOR_CYAN}========================================================================"
-echo "======================= ${COLOR_WHITE}Starting ECRIO Build${COLOR_CYAN} ===========================${COLOR_NC}"
+echo "======================= ${COLOR_WHITE}Starting LED Build${COLOR_CYAN} ===========================${COLOR_NC}"
 if $VERBOSE; then
    echo "CXX: $CXX"
    echo "CC: $CC"
@@ -195,9 +208,9 @@ echo "    ${COLOR_RED}███████╗╚██████╗██║ 
 echo "    ${COLOR_RED}╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ "
 echo ""
 
-echo "${COLOR_GREEN}ECRIO has been successfully built. $(($TIME_END/3600)):$(($TIME_END%3600/60)):$(($TIME_END%60))"
-echo "${COLOR_GREEN}You can now install using: ./scripts/ecrio_install.sh${COLOR_NC}"
-echo "${COLOR_YELLOW}Uninstall with: ./scripts/ecrio_uninstall.sh${COLOR_NC}"
+echo "${COLOR_GREEN}LED has been successfully built. $(($TIME_END/3600)):$(($TIME_END%3600/60)):$(($TIME_END%60))"
+echo "${COLOR_GREEN}You can now install using: ./scripts/led_install.sh${COLOR_NC}"
+echo "${COLOR_YELLOW}Uninstall with: ./scripts/led_uninstall.sh${COLOR_NC}"
 
 echo ""
 echo "${COLOR_CYAN}If you wish to perform tests to ensure functional code:${COLOR_NC}"
@@ -205,7 +218,7 @@ if $ENABLE_MONGO; then
    echo "${BIN_DIR}/mongod --dbpath ${MONGODB_DATA_DIR} -f ${MONGODB_CONF} --logpath ${MONGODB_LOG_DIR}/mongod.log &"
    PATH_TO_USE=" PATH=\$PATH:$OPT_DIR/mongodb/bin"
 fi
-echo "cd ./build &&${PATH_TO_USE} make test" # PATH is set as currently 'mongo' binary is required for the mongodb test
+echo "cd ${BUILD_DIR} && ${PATH_TO_USE} make test" # PATH is set as currently 'mongo' binary is required for the mongodb test
 
 echo ""
 

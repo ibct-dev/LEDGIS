@@ -871,7 +871,7 @@ class Node(object):
     def getAccountEosBalanceStr(self, scope):
         """Returns SYS currency0000 account balance from cleos get table command. Returned balance is string following syntax "98.0311 SYS". """
         assert isinstance(scope, str)
-        amount=self.getTableAccountBalance("ecrio.token", scope)
+        amount=self.getTableAccountBalance("led.token", scope)
         if Utils.Debug: Utils.Print("getNodeAccountEosBalance %s %s" % (scope, amount))
         assert isinstance(amount, str)
         return amount
@@ -1536,19 +1536,19 @@ class Node(object):
                     break
         return protocolFeatures
 
-    # Require PREACTIVATE_FEATURE to be activated and require ecrio.bios with preactivate_feature
+    # Require PREACTIVATE_FEATURE to be activated and require led.bios with preactivate_feature
     def preactivateProtocolFeatures(self, featureDigests:list):
         for digest in featureDigests:
             Utils.Print("push activate action with digest {}".format(digest))
             data="{{\"feature_digest\":{}}}".format(digest)
-            opts="--permission ecrio@active"
-            trans=self.pushMessage("ecrio", "activate", data, opts)
+            opts="--permission led@active"
+            trans=self.pushMessage("led", "activate", data, opts)
             if trans is None or not trans[0]:
                 Utils.Print("ERROR: Failed to preactive digest {}".format(digest))
                 return None
         self.waitForHeadToAdvance()
 
-    # Require PREACTIVATE_FEATURE to be activated and require ecrio.bios with preactivate_feature
+    # Require PREACTIVATE_FEATURE to be activated and require led.bios with preactivate_feature
     def preactivateAllBuiltinProtocolFeature(self):
         allBuiltinProtocolFeatureDigests = self.getAllBuiltinFeatureDigestsToPreactivate()
         self.preactivateProtocolFeatures(allBuiltinProtocolFeatureDigests)
