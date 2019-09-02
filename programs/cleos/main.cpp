@@ -977,42 +977,85 @@ CLI::callback_t obsoleted_option_host_port = [](CLI::results_t) {
    return false;
 };
 
-struct register_producer_subcommand {
+struct register_interior_subcommand {
    string producer_str;
    string producer_key_str;
-   string transfer_ratio;
+   string election_promise;
    string url;
    uint16_t loc = 0;
    string city;
    string logo;
 
-   register_producer_subcommand(CLI::App* actionRoot) {
-      auto register_producer = actionRoot->add_subcommand("regproducer", localized("Register a new producer"));
-      register_producer->add_option("account", producer_str, localized("The account to register as a producer(The producer's dapp token contract)"))->required();
-      register_producer->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
-      register_producer->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
-      register_producer->add_option("url", url, localized("url where info about producer can be found"), true);
-      register_producer->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
-      register_producer->add_option("city", city, localized("a city representing a producer"), true);
-      register_producer->add_option("logo", logo, localized("logo representing the producer"), true);
-      add_standard_transaction_options(register_producer, "account@active");
+   register_interior_subcommand(CLI::App* actionRoot) {
+      auto register_interior = actionRoot->add_subcommand("reginterior", localized("Register a new producer"));
+      register_interior->add_option("account", producer_str, localized("The account to register as a producer(The producer's dapp token contract)"))->required();
+      register_interior->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
+      register_interior->add_option("election_promise", election_promise, localized("Election promise of interior"))->required();
+      register_interior->add_option("url", url, localized("url where info about producer can be found"), true);
+      register_interior->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
+      register_interior->add_option("city", city, localized("a city representing a producer"), true);
+      register_interior->add_option("logo", logo, localized("logo representing the producer"), true);
+      add_standard_transaction_options(register_interior, "account@active");
 
-      register_producer->set_callback([this] {
+      register_interior->set_callback([this] {
          public_key_type producer_key;
          try {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
          fc::variant regprod_var = fc::mutable_variant_object()
-                  ("producer", producer_str)
+                  ("interior", producer_str)
                   ("producer_key", producer_key)
-                  ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio))
+                  ("election_promise", election_promise)
                   ("url", url)
                   ("location", loc)
                   ("city", city)
                   ("logo_256", logo);
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          
-         send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
+         send_actions({create_action(accountPermissions, config::system_account_name, N(reginterior), regprod_var)});
+      });
+   }
+};
+
+struct register_frontier_subcommand {
+   string producer_str;
+   string producer_key_str;
+   string transfer_ratio;
+   string category;
+   string url;
+   uint16_t loc = 0;
+   string city;
+   string logo;
+
+   register_frontier_subcommand(CLI::App* actionRoot) {
+      auto register_frontier = actionRoot->add_subcommand("regfrontier", localized("Register a new producer"));
+      register_frontier->add_option("account", producer_str, localized("The account to register as a producer(The producer's dapp token contract)"))->required();
+      register_frontier->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
+      register_frontier->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
+      register_frontier->add_option("category", category, localized("Category of frontier's DApp"))->required();
+      register_frontier->add_option("url", url, localized("url where info about producer can be found"), true);
+      register_frontier->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
+      register_frontier->add_option("city", city, localized("a city representing a producer"), true);
+      register_frontier->add_option("logo", logo, localized("logo representing the producer"), true);
+      add_standard_transaction_options(register_frontier, "account@active");
+
+      register_frontier->set_callback([this] {
+         public_key_type producer_key;
+         try {
+            producer_key = public_key_type(producer_key_str);
+         } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
+         fc::variant regprod_var = fc::mutable_variant_object()
+                  ("frontier", producer_str)
+                  ("producer_key", producer_key)
+                  ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio))
+                  ("category", category)
+                  ("url", url)
+                  ("location", loc)
+                  ("city", city)
+                  ("logo_256", logo);
+         auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
+         
+         send_actions({create_action(accountPermissions, config::system_account_name, N(regfrontier), regprod_var)});
       });
    }
 };
@@ -4174,7 +4217,8 @@ int main( int argc, char** argv ) {
 
    auto createAccountSystem = create_account_subcommand( system, false /*simple*/ );
 
-   auto registerProducer = register_producer_subcommand(system);
+   auto registerFrontier = register_frontier_subcommand(system);
+   auto registerInterior = register_interior_subcommand(system);
    // auto updateProducer = update_producer_subcommand(system);
    auto unregisterProducer = unregister_producer_subcommand(system);
    auto changeratio = change_ratio_subcommand(system);
