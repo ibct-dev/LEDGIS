@@ -1,5 +1,5 @@
 
-# LED - EOS chrome infrastructure
+# LED - LEDGIS blockchain infrastructure
 
 #### LED Setting
 
@@ -42,7 +42,7 @@ LED currently supports the following operating systems:
 11. Designed for Parallel Execution of Context Free Validation Logic
 12. Designed for Inter Blockchain Communication
 
-## Resources
+<!-- ## Resources
 
 - [Website](https://kr.eoschrome.io/)
 
@@ -50,4 +50,4 @@ LED currently supports the following operating systems:
 
 - [Medium](https://medium.com/eoschrome)
 
-- [Developer Portal](https://developers.eos.io)
+- [Developer Portal](https://developers.eos.io) -->

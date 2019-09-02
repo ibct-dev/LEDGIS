@@ -200,12 +200,12 @@ execute cd $REPO_ROOT 1>/dev/null
 TIME_END=$(($(date -u +%s) - $TIME_BEGIN))
 
 echo ""
-echo "    ${COLOR_RED}███████╗ ██████╗██████╗ ██╗ ██████╗ "
-echo "    ${COLOR_RED}██╔════╝██╔════╝██╔══██╗██║██╔═══██╗"
-echo "    ${COLOR_RED}█████╗  ██║     ██████╔╝██║██║   ██║"
-echo "    ${COLOR_RED}██╔══╝  ██║     ██╔══██╗██║██║   ██║"
-echo "    ${COLOR_RED}███████╗╚██████╗██║  ██║██║╚██████╔╝"
-echo "    ${COLOR_RED}╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ "
+echo "    ${COLOR_RED}██╗     ███████╗██████╗  ██████╗ ██╗███████╗"
+echo "    ${COLOR_RED}██║     ██╔════╝██╔══██╗██╔════╝ ██║██╔════╝"
+echo "    ${COLOR_RED}██║     █████╗  ██║  ██║██║  ███╗██║███████╗"
+echo "    ${COLOR_RED}██║     ██╔══╝  ██║  ██║██║   ██║██║╚════██║"
+echo "    ${COLOR_RED}███████╗███████╗██████╔╝╚██████╔╝██║███████║"
+echo "    ${COLOR_RED}╚══════╝╚══════╝╚═════╝  ╚═════╝ ╚═╝╚══════╝"
 echo ""
 
 echo "${COLOR_GREEN}LED has been successfully built. $(($TIME_END/3600)):$(($TIME_END%3600/60)):$(($TIME_END%60))"
