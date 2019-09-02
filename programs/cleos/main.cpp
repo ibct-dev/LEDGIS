@@ -1759,67 +1759,67 @@ struct undelegate_bandwidth_subcommand {
    }
 };
 
-struct bidname_subcommand {
-   string bidder_str;
-   string newname_str;
-   string bid_amount;
-   bidname_subcommand(CLI::App *actionRoot) {
-      auto bidname = actionRoot->add_subcommand("bidname", localized("Name bidding"));
-      bidname->add_option("bidder", bidder_str, localized("The bidding account"))->required();
-      bidname->add_option("newname", newname_str, localized("The bidding name"))->required();
-      bidname->add_option("bid", bid_amount, localized("The amount of tokens to bid"))->required();
-      add_standard_transaction_options(bidname, "bidder@active");
-      bidname->set_callback([this] {
-         fc::variant act_payload = fc::mutable_variant_object()
-                  ("bidder", bidder_str)
-                  ("newname", newname_str)
-                  ("bid", to_asset(bid_amount));
-         auto accountPermissions = get_account_permissions(tx_permission, {bidder_str,config::active_name});
-         send_actions({create_action(accountPermissions, config::system_account_name, N(bidname), act_payload)});
-      });
-   }
-};
+// struct bidname_subcommand {
+//    string bidder_str;
+//    string newname_str;
+//    string bid_amount;
+//    bidname_subcommand(CLI::App *actionRoot) {
+//       auto bidname = actionRoot->add_subcommand("bidname", localized("Name bidding"));
+//       bidname->add_option("bidder", bidder_str, localized("The bidding account"))->required();
+//       bidname->add_option("newname", newname_str, localized("The bidding name"))->required();
+//       bidname->add_option("bid", bid_amount, localized("The amount of tokens to bid"))->required();
+//       add_standard_transaction_options(bidname, "bidder@active");
+//       bidname->set_callback([this] {
+//          fc::variant act_payload = fc::mutable_variant_object()
+//                   ("bidder", bidder_str)
+//                   ("newname", newname_str)
+//                   ("bid", to_asset(bid_amount));
+//          auto accountPermissions = get_account_permissions(tx_permission, {bidder_str,config::active_name});
+//          send_actions({create_action(accountPermissions, config::system_account_name, N(bidname), act_payload)});
+//       });
+//    }
+// };
 
-struct bidname_info_subcommand {
-   bool print_json = false;
-   name newname;
-   bidname_info_subcommand(CLI::App* actionRoot) {
-      auto list_producers = actionRoot->add_subcommand("bidnameinfo", localized("Get bidname info"));
-      list_producers->add_flag("--json,-j", print_json, localized("Output in JSON format"));
-      list_producers->add_option("newname", newname, localized("The bidding name"))->required();
-      list_producers->set_callback([this] {
-         auto rawResult = call(get_table_func, fc::mutable_variant_object("json", true)
-                               ("code", "legis")("scope", "legis")("table", "namebids")
-                               ("lower_bound", newname.value)
-                               ("upper_bound", newname.value + 1)
-                               // Less than ideal upper_bound usage preserved so cleos can still work with old buggy nodeos versions
-                               // Change to newname.value when cleos no longer needs to support nodeos versions older than 1.5.0
-                               ("limit", 1));
-         if ( print_json ) {
-            std::cout << fc::json::to_pretty_string(rawResult) << std::endl;
-            return;
-         }
-         auto result = rawResult.as<eosio::chain_apis::read_only::get_table_rows_result>();
-         // Condition in if statement below can simply be res.rows.empty() when cleos no longer needs to support nodeos versions older than 1.5.0
-         if( result.rows.empty() || result.rows[0].get_object()["newname"].as_string() != newname.to_string() ) {
-            std::cout << "No bidname record found" << std::endl;
-            return;
-         }
-         const auto& row = result.rows[0];
-         string time = row["last_bid_time"].as_string();
-         try {
-             time = (string)fc::time_point(fc::microseconds(to_uint64(time)));
-         } catch (fc::parse_error_exception&) {
-         }
-         int64_t bid = row["high_bid"].as_int64();
-         std::cout << std::left << std::setw(18) << "bidname:" << std::right << std::setw(24) << row["newname"].as_string() << "\n"
-                   << std::left << std::setw(18) << "highest bidder:" << std::right << std::setw(24) << row["high_bidder"].as_string() << "\n"
-                   << std::left << std::setw(18) << "highest bid:" << std::right << std::setw(24) << (bid > 0 ? bid : -bid) << "\n"
-                   << std::left << std::setw(18) << "last bid time:" << std::right << std::setw(24) << time << std::endl;
-         if (bid < 0) std::cout << "This auction has already closed" << std::endl;
-      });
-   }
-};
+// struct bidname_info_subcommand {
+//    bool print_json = false;
+//    name newname;
+//    bidname_info_subcommand(CLI::App* actionRoot) {
+//       auto list_producers = actionRoot->add_subcommand("bidnameinfo", localized("Get bidname info"));
+//       list_producers->add_flag("--json,-j", print_json, localized("Output in JSON format"));
+//       list_producers->add_option("newname", newname, localized("The bidding name"))->required();
+//       list_producers->set_callback([this] {
+//          auto rawResult = call(get_table_func, fc::mutable_variant_object("json", true)
+//                                ("code", "legis")("scope", "legis")("table", "namebids")
+//                                ("lower_bound", newname.value)
+//                                ("upper_bound", newname.value + 1)
+//                                // Less than ideal upper_bound usage preserved so cleos can still work with old buggy nodeos versions
+//                                // Change to newname.value when cleos no longer needs to support nodeos versions older than 1.5.0
+//                                ("limit", 1));
+//          if ( print_json ) {
+//             std::cout << fc::json::to_pretty_string(rawResult) << std::endl;
+//             return;
+//          }
+//          auto result = rawResult.as<eosio::chain_apis::read_only::get_table_rows_result>();
+//          // Condition in if statement below can simply be res.rows.empty() when cleos no longer needs to support nodeos versions older than 1.5.0
+//          if( result.rows.empty() || result.rows[0].get_object()["newname"].as_string() != newname.to_string() ) {
+//             std::cout << "No bidname record found" << std::endl;
+//             return;
+//          }
+//          const auto& row = result.rows[0];
+//          string time = row["last_bid_time"].as_string();
+//          try {
+//              time = (string)fc::time_point(fc::microseconds(to_uint64(time)));
+//          } catch (fc::parse_error_exception&) {
+//          }
+//          int64_t bid = row["high_bid"].as_int64();
+//          std::cout << std::left << std::setw(18) << "bidname:" << std::right << std::setw(24) << row["newname"].as_string() << "\n"
+//                    << std::left << std::setw(18) << "highest bidder:" << std::right << std::setw(24) << row["high_bidder"].as_string() << "\n"
+//                    << std::left << std::setw(18) << "highest bid:" << std::right << std::setw(24) << (bid > 0 ? bid : -bid) << "\n"
+//                    << std::left << std::setw(18) << "last bid time:" << std::right << std::setw(24) << time << std::endl;
+//          if (bid < 0) std::cout << "This auction has already closed" << std::endl;
+//       });
+//    }
+// };
 
 struct list_bw_subcommand {
    eosio::name account;
@@ -4245,8 +4245,8 @@ int main( int argc, char** argv ) {
    auto delegateBandWidth = delegate_bandwidth_subcommand(system);
    auto undelegateBandWidth = undelegate_bandwidth_subcommand(system);
    auto listBandWidth = list_bw_subcommand(system);
-   auto bidname = bidname_subcommand(system);
-   auto bidnameinfo = bidname_info_subcommand(system);
+   // auto bidname = bidname_subcommand(system);
+   // auto bidnameinfo = bidname_info_subcommand(system);
 
    auto buyram = buyram_subcommand(system);
    auto sellram = sellram_subcommand(system);
