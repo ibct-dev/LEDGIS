@@ -987,8 +987,8 @@ struct register_interior_subcommand {
    string logo;
 
    register_interior_subcommand(CLI::App* actionRoot) {
-      auto register_interior = actionRoot->add_subcommand("reginterior", localized("Register a new producer"));
-      register_interior->add_option("account", producer_str, localized("The account to register as a producer(The producer's dapp token contract)"))->required();
+      auto register_interior = actionRoot->add_subcommand("reginterior", localized("Register a new interior"));
+      register_interior->add_option("account", producer_str, localized("The account to register as a interior(The producer's dapp token contract)"))->required();
       register_interior->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
       register_interior->add_option("election_promise", election_promise, localized("Election promise of interior"))->required();
       register_interior->add_option("url", url, localized("url where info about producer can be found"), true);
@@ -1261,7 +1261,7 @@ struct approve_producer_subcommand {
                return;
             }
             EOS_ASSERT( 1 == res.rows.size(), multiple_voter_info, "More than one voter_info for account" );
-            auto prod_vars = res.rows[0]["producers"].get_array();
+            auto prod_vars = res.rows[0]["interiors"].get_array();
             vector<eosio::name> prods;
             for ( auto& x : prod_vars ) {
                prods.push_back( name(x.as_string()) );
@@ -1276,7 +1276,7 @@ struct approve_producer_subcommand {
             fc::variant act_payload = fc::mutable_variant_object()
                ("voter", voter)
                ("proxy", "")
-               ("producers", prods);
+               ("interiors", prods);
             auto accountPermissions = get_account_permissions(tx_permission, {voter,config::active_name});
             send_actions({create_action(accountPermissions, config::system_account_name, N(voteproducer), act_payload)});
       });
@@ -1314,7 +1314,7 @@ struct unapprove_producer_subcommand {
                return;
             }
             EOS_ASSERT( 1 == res.rows.size(), multiple_voter_info, "More than one voter_info for account" );
-            auto prod_vars = res.rows[0]["producers"].get_array();
+            auto prod_vars = res.rows[0]["interiors"].get_array();
             vector<eosio::name> prods;
             for ( auto& x : prod_vars ) {
                prods.push_back( name(x.as_string()) );
@@ -1328,7 +1328,7 @@ struct unapprove_producer_subcommand {
             fc::variant act_payload = fc::mutable_variant_object()
                ("voter", voter)
                ("proxy", "")
-               ("producers", prods);
+               ("interiors", prods);
             auto accountPermissions = get_account_permissions(tx_permission, {voter,config::active_name});
             send_actions({create_action(accountPermissions, config::system_account_name, N(voteproducer), act_payload)});
       });
@@ -1411,7 +1411,7 @@ struct buyservice_subcommand {
    eosio::name producer_name;
 
    buyservice_subcommand(CLI::App* actionRoot) {
-      auto buy_service = actionRoot->add_subcommand("buyservice", localized("Pay for one producers"));
+      auto buy_service = actionRoot->add_subcommand("buyservice", localized("Pay for one frontier"));
       buy_service->add_option("buyer", buyer_str, localized("The pay account"))->required();
       buy_service->add_option("quantity", pay_quantity, localized("pay asset."))->required();
       buy_service->add_option("producer", producer_name, localized("The account to pay for. All options from this position and following will be treated as the producer list."))->required();
@@ -1422,7 +1422,7 @@ struct buyservice_subcommand {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("buyer", buyer_str)
                   ("quantity", to_asset(pay_quantity))
-                  ("producer", producer_name);
+                  ("frontier", producer_name);
          auto accountPermissions = get_account_permissions(tx_permission, {buyer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(buyservice), act_payload)});
       });
@@ -2638,8 +2638,8 @@ void get_account( const string& accountName, const string& coresym, bool json_fo
          auto& obj = res.voter_info.get_object();
          string proxy = obj["proxy"].as_string();
          if ( proxy.empty() ) {
-            auto& prods = obj["producers"].get_array();
-            std::cout << "producers:";
+            auto& prods = obj["interiors"].get_array();
+            std::cout << "interiors:";
             if ( !prods.empty() ) {
                for ( size_t i = 0; i < prods.size(); ++i ) {
                   if ( i%3 == 0 ) {
