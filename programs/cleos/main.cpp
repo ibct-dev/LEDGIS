@@ -1047,7 +1047,7 @@ struct register_frontier_subcommand {
          fc::variant regprod_var = fc::mutable_variant_object()
                   ("frontier", producer_str)
                   ("producer_key", producer_key)
-                  ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio))
+                  ("transfer_ratio", to_dapp_asset(N(led.token), transfer_ratio))
                   ("category", category)
                   ("url", url)
                   ("location", loc)
