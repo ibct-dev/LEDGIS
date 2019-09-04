@@ -1585,16 +1585,80 @@ struct list_producers_subcommand {
             std::cout << "No producers found" << std::endl;
             return;
          }
-         auto weight = result.total_producer_vote_weight;
-         if ( !weight )
-            weight = 1;
-         printf("%-13s %-57s %-59s %s\n", "Producer", "Producer key", "Url", "Scaled votes");
+         printf("%-13s %-57s %-59s\n", "Producer", "Producer key", "Url");
          for ( auto& row : result.rows )
-            printf("%-13.13s %-57.57s %-59.59s %1.4f\n",
+            printf("%-13.13s %-57.57s %-59.59s\n",
                    row["owner"].as_string().c_str(),
                    row["producer_key"].as_string().c_str(),
-                   row["url"].as_string().c_str(),
-                   row["total_votes"].as_double() / weight);
+                   row["url"].as_string().c_str());
+         if ( !result.more.empty() )
+            std::cout << "-L " << result.more << " for more" << std::endl;
+      });
+   }
+};
+
+struct list_interiors_subcommand {
+   bool print_json = false;
+   uint32_t limit = 50;
+   std::string lower;
+
+   list_interiors_subcommand(CLI::App* actionRoot) {
+      auto list_interiors = actionRoot->add_subcommand("listinteriors", localized("List interiors"));
+      list_interiors->add_flag("--json,-j", print_json, localized("Output in JSON format"));
+      list_interiors->add_option("-l,--limit", limit, localized("The maximum number of rows to return"));
+      list_interiors->add_option("-L,--lower", lower, localized("lower bound value of key, defaults to first"));
+      list_interiors->set_callback([this] {
+         auto rawResult = call(get_producers_func, fc::mutable_variant_object
+            ("json", true)("lower_bound", lower)("limit", limit));
+         if ( print_json ) {
+            std::cout << fc::json::to_pretty_string(rawResult) << std::endl;
+            return;
+         }
+         auto result = rawResult.as<eosio::chain_apis::read_only::get_interiors_result>();
+         if ( result.rows.empty() ) {
+            std::cout << "No producers found" << std::endl;
+            return;
+         }
+         printf("%-13s %-57s %-59s\n", "Producer", "Election promise", "Vote weights");
+         for ( auto& row : result.rows )
+            printf("%-13.13s %-57.57s %-59.59s\n",
+                   row["owner"].as_string().c_str(),
+                   row["election_promise"].as_string().c_str(),
+                   row["vote_weights"].as_string().c_str());
+         if ( !result.more.empty() )
+            std::cout << "-L " << result.more << " for more" << std::endl;
+      });
+   }
+};
+
+struct list_frontiers_subcommand {
+   bool print_json = false;
+   uint32_t limit = 50;
+   std::string lower;
+
+   list_frontiers_subcommand(CLI::App* actionRoot) {
+      auto list_frontiers = actionRoot->add_subcommand("listfrontiers", localized("List frontiers"));
+      list_frontiers->add_flag("--json,-j", print_json, localized("Output in JSON format"));
+      list_frontiers->add_option("-l,--limit", limit, localized("The maximum number of rows to return"));
+      list_frontiers->add_option("-L,--lower", lower, localized("lower bound value of key, defaults to first"));
+      list_frontiers->set_callback([this] {
+         auto rawResult = call(get_producers_func, fc::mutable_variant_object
+            ("json", true)("lower_bound", lower)("limit", limit));
+         if ( print_json ) {
+            std::cout << fc::json::to_pretty_string(rawResult) << std::endl;
+            return;
+         }
+         auto result = rawResult.as<eosio::chain_apis::read_only::get_frontiers_result>();
+         if ( result.rows.empty() ) {
+            std::cout << "No producers found" << std::endl;
+            return;
+         }
+         printf("%-13s %-57s %-59s\n", "Producer", "Category", "Service weight");
+         for ( auto& row : result.rows )
+            printf("%-13.13s %-57.57s %-59.59s\n",
+                   row["owner"].as_string().c_str(),
+                   row["category"].as_string().c_str(),
+                   row["service_weight_window"].as_string().c_str());
          if ( !result.more.empty() )
             std::cout << "-L " << result.more << " for more" << std::endl;
       });
@@ -4241,6 +4305,8 @@ int main( int argc, char** argv ) {
    // auto unapproveProducer = unapprove_producer_subcommand(voteProducer);
 
    auto listProducers = list_producers_subcommand(system);
+   auto listFrontiers = list_frontiers_subcommand(system);
+   auto listInteriors = list_interiors_subcommand(system);
 
    auto delegateBandWidth = delegate_bandwidth_subcommand(system);
    auto undelegateBandWidth = undelegate_bandwidth_subcommand(system);
