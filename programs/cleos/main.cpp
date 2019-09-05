@@ -1608,7 +1608,7 @@ struct list_interiors_subcommand {
       list_interiors->add_option("-l,--limit", limit, localized("The maximum number of rows to return"));
       list_interiors->add_option("-L,--lower", lower, localized("lower bound value of key, defaults to first"));
       list_interiors->set_callback([this] {
-         auto rawResult = call(get_producers_func, fc::mutable_variant_object
+         auto rawResult = call(get_interiors_func, fc::mutable_variant_object
             ("json", true)("lower_bound", lower)("limit", limit));
          if ( print_json ) {
             std::cout << fc::json::to_pretty_string(rawResult) << std::endl;
@@ -1642,7 +1642,7 @@ struct list_frontiers_subcommand {
       list_frontiers->add_option("-l,--limit", limit, localized("The maximum number of rows to return"));
       list_frontiers->add_option("-L,--lower", lower, localized("lower bound value of key, defaults to first"));
       list_frontiers->set_callback([this] {
-         auto rawResult = call(get_producers_func, fc::mutable_variant_object
+         auto rawResult = call(get_frontiers_func, fc::mutable_variant_object
             ("json", true)("lower_bound", lower)("limit", limit));
          if ( print_json ) {
             std::cout << fc::json::to_pretty_string(rawResult) << std::endl;

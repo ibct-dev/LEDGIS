@@ -1659,33 +1659,27 @@ read_only::get_producers_result read_only::get_producers( const read_only::get_p
    const auto& d = db.db();
    const auto lower = name{p.lower_bound};
 
-   static const uint8_t secondary_index_num = 0;
    const auto* const table_id = d.find<chain::table_id_object, chain::by_code_scope_table>(
            boost::make_tuple(config::system_account_name, config::system_account_name, N(producers)));
-   const auto* const secondary_table_id = d.find<chain::table_id_object, chain::by_code_scope_table>(
-           boost::make_tuple(config::system_account_name, config::system_account_name, N(producers) | secondary_index_num));
-   EOS_ASSERT(table_id && secondary_table_id, chain::contract_table_query_exception, "Missing producers table");
-
-   const auto& kv_index = d.get_index<key_value_index, by_scope_primary>();
-   const auto& secondary_index = d.get_index<index_double_index>().indices();
-   const auto& secondary_index_by_primary = secondary_index.get<by_primary>();
-   const auto& secondary_index_by_secondary = secondary_index.get<by_secondary>();
+   EOS_ASSERT(table_id, chain::contract_table_query_exception, "Missing producers table");
 
    read_only::get_producers_result result;
    const auto stopTime = fc::time_point::now() + fc::microseconds(1000 * 10); // 10ms
    vector<char> data;
 
+   const auto& kv_index = d.get_index<key_value_index, by_scope_primary>();
+   auto upper_bound_lookup_tuple = kv_index.upper_bound(boost::make_tuple( table_id->id, std::numeric_limits<uint64_t>::max()));
+
    auto it = [&]{
       if(lower.value == 0)
-         return secondary_index_by_secondary.lower_bound(
-            boost::make_tuple(secondary_table_id->id, to_softfloat64(std::numeric_limits<double>::lowest()), 0));
+         return kv_index.lower_bound(
+            boost::make_tuple(table_id->id, std::numeric_limits<uint64_t>::lowest()));
       else
-         return secondary_index.project<by_secondary>(
-            secondary_index_by_primary.lower_bound(
-               boost::make_tuple(secondary_table_id->id, lower.value)));
+         return kv_index.lower_bound(
+               boost::make_tuple(table_id->id, lower.value));
    }();
 
-   for( ; it != secondary_index_by_secondary.end() && it->t_id == secondary_table_id->id; ++it ) {
+   for( ; it != upper_bound_lookup_tuple ; ++it ) {
       if (result.rows.size() >= p.limit || fc::time_point::now() > stopTime) {
          result.more = name{it->primary_key}.to_string();
          break;
@@ -1767,7 +1761,7 @@ read_only::get_interiors_result read_only::get_interiors( const read_only::get_i
    for (auto p : db.active_producers().producers) {
       fc::variant row = fc::mutable_variant_object()
          ("owner", p.producer_name)
-         ("producer_key", p.block_signing_key)
+         ("election_promise", "")
          ("url", "");
       result.rows.push_back(row);
    }
@@ -1828,7 +1822,7 @@ read_only::get_frontiers_result read_only::get_frontiers( const read_only::get_f
    for (auto p : db.active_producers().producers) {
       fc::variant row = fc::mutable_variant_object()
          ("owner", p.producer_name)
-         ("producer_key", p.block_signing_key)
+         ("category", "")
          ("url", "");
 
       result.rows.push_back(row);
@@ -1836,7 +1830,6 @@ read_only::get_frontiers_result read_only::get_frontiers( const read_only::get_f
 
    return result;
 }
-
 
 read_only::get_producer_schedule_result read_only::get_producer_schedule( const read_only::get_producer_schedule_params& p ) const {
    read_only::get_producer_schedule_result result;
