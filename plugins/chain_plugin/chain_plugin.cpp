@@ -1762,7 +1762,7 @@ read_only::get_interiors_result read_only::get_interiors( const read_only::get_i
       fc::variant row = fc::mutable_variant_object()
          ("owner", p.producer_name)
          ("election_promise", "")
-         ("url", "");
+         ("vote_weights", "");
       result.rows.push_back(row);
    }
 
@@ -1823,7 +1823,7 @@ read_only::get_frontiers_result read_only::get_frontiers( const read_only::get_f
       fc::variant row = fc::mutable_variant_object()
          ("owner", p.producer_name)
          ("category", "")
-         ("url", "");
+         ("service_weights", "");
 
       result.rows.push_back(row);
    }

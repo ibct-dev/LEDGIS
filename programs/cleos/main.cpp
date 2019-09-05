@@ -1658,7 +1658,7 @@ struct list_frontiers_subcommand {
             printf("%-13.13s %-57.57s %-59.59s\n",
                    row["owner"].as_string().c_str(),
                    row["category"].as_string().c_str(),
-                   row["service_weight_window"].as_string().c_str());
+                   row["service_weights"].as_string().c_str());
          if ( !result.more.empty() )
             std::cout << "-L " << result.more << " for more" << std::endl;
       });
