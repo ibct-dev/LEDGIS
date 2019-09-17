@@ -210,7 +210,7 @@ endif()
 message( STATUS "Using '${CORE_SYMBOL_NAME}' as CORE symbol name" )
 
 if ("${SYSTEM_ACCOUNT_ROOT_KEY}" STREQUAL "")
-   set(SYSTEM_ACCOUNT_ROOT_KEY "EOS8J4bijk4uiZakKiWsB56AvvKCEiWuQ8LVs3Gcryd74xchymoiJ")
+   set(SYSTEM_ACCOUNT_ROOT_KEY "LED8J4bijk4uiZakKiWsB56AvvKCEiWuQ8LVs3Gcryd74xchymoiJ")
 endif()
 
 message( STATUS "Using '${SYSTEM_ACCOUNT_ROOT_KEY}' as public key for system root account" )
