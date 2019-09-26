@@ -297,7 +297,7 @@ def stepSetSystemContract():
     sleep(1)
     run(args.cleos + 'push action led setpriv' + jsonArg(['led.msig', 1]) + '-p led@active')
 def stepInitSystemContract():
-    run(args.cleos + 'push action led init' + jsonArg(['0', '4,SYS']) + '-p led@active')
+    run(args.cleos + 'push action led init' + jsonArg(['0', '4,' + args.symbol]) + '-p led@active')
     sleep(1)
 def stepCreateStakedAccounts():
     createStakedAccounts(0, len(accounts))
