@@ -1,11 +1,12 @@
 
-# LED - LEDGIS blockchain infrastructure
+# LEDGIS - LEDGIS blockchain infrastructure
 
-#### LED Setting
+#### LEDGIS Setting
 
 ```sh
-$ git clone https://github.com/ibct-dev/LED --recursive
-$ cd LED
+
+$ git clone https://github.com/ibct-dev/LEDGIS --recursive
+$ cd LEDGIS
 $ sudo ./scripts/led_build -s "SYSTEM TOKEN NAME"
 $ sudo ./scripts/led_install
 ```
@@ -19,7 +20,7 @@ If you have previously installed LED using build scripts, you can execute `led_u
 
 #### Supported Operating Systems
 
-LED currently supports the following operating systems:  
+LEDGIS currently supports the following operating systems:  
 1. Amazon Linux 2
 2. CentOS 7
 3. Ubuntu 18.04
@@ -27,7 +28,7 @@ LED currently supports the following operating systems:
 
 
 
-#### LED features
+#### LEDGIS features
 
 1. Free Rate Limited Transactions
 2. Low Latency Block confirmation (0.5 seconds)

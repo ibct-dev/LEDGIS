@@ -352,11 +352,36 @@ public:
 
    struct get_producers_result {
       vector<fc::variant> rows; ///< one row per item, either encoded as hex string or JSON object
-      double              total_producer_vote_weight;
       string              more; ///< fill lower_bound with this value to fetch more rows
    };
 
    get_producers_result get_producers( const get_producers_params& params )const;
+
+   struct get_interiors_params {
+      bool        json = false;
+      string      lower_bound;
+      uint32_t    limit = 50;
+   };
+
+   struct get_interiors_result {
+      vector<fc::variant> rows; ///< one row per item, either encoded as hex string or JSON object
+      string              more; ///< fill lower_bound with this value to fetch more rows
+   };
+
+   get_interiors_result get_interiors( const get_interiors_params& params )const;
+
+   struct get_frontiers_params {
+      bool        json = false;
+      string      lower_bound;
+      uint32_t    limit = 50;
+   };
+
+   struct get_frontiers_result {
+      vector<fc::variant> rows; ///< one row per item, either encoded as hex string or JSON object
+      string              more; ///< fill lower_bound with this value to fetch more rows
+   };
+
+   get_frontiers_result get_frontiers( const get_frontiers_params& params )const;
 
    struct get_producer_schedule_params {
    };
@@ -715,11 +740,11 @@ public:
    chain::chain_id_type get_chain_id() const;
    fc::microseconds get_abi_serializer_max_time() const;
 
-   void handle_guard_exception(const chain::guard_exception& e) const;
-
+   static void handle_guard_exception(const chain::guard_exception& e);
    static void handle_db_exhaustion();
+   static void handle_bad_alloc();
 private:
-   void log_guard_exception(const chain::guard_exception& e) const;
+   static void log_guard_exception(const chain::guard_exception& e);
 
    unique_ptr<class chain_plugin_impl> my;
 };
@@ -749,7 +774,11 @@ FC_REFLECT( eosio::chain_apis::read_only::get_currency_stats_params, (code)(symb
 FC_REFLECT( eosio::chain_apis::read_only::get_currency_stats_result, (supply)(max_supply)(issuer));
 
 FC_REFLECT( eosio::chain_apis::read_only::get_producers_params, (json)(lower_bound)(limit) )
-FC_REFLECT( eosio::chain_apis::read_only::get_producers_result, (rows)(total_producer_vote_weight)(more) );
+FC_REFLECT( eosio::chain_apis::read_only::get_producers_result, (rows)(more) );
+FC_REFLECT( eosio::chain_apis::read_only::get_interiors_params, (json)(lower_bound)(limit) )
+FC_REFLECT( eosio::chain_apis::read_only::get_interiors_result, (rows)(more) );
+FC_REFLECT( eosio::chain_apis::read_only::get_frontiers_params, (json)(lower_bound)(limit) )
+FC_REFLECT( eosio::chain_apis::read_only::get_frontiers_result, (rows)(more) );
 
 FC_REFLECT_EMPTY( eosio::chain_apis::read_only::get_producer_schedule_params )
 FC_REFLECT( eosio::chain_apis::read_only::get_producer_schedule_result, (active)(pending)(proposed) );

@@ -921,7 +921,7 @@ void ensure_keosd_running(CLI::App* app) {
     if (app->get_subcommand("create")->got_subcommand("key")) // create key does not require wallet
        return;
     if (auto* subapp = app->get_subcommand("system")) {
-       if (subapp->got_subcommand("listproducers") || subapp->got_subcommand("listbw") || subapp->got_subcommand("bidnameinfo")) // system list* do not require wallet
+       if (subapp->got_subcommand("listproducers") || subapp->got_subcommand("listbw") ) //|| subapp->got_subcommand("bidnameinfo")) // system list* do not require wallet
          return;
     }
     if (wallet_url != default_wallet_url)
@@ -987,8 +987,8 @@ struct register_interior_subcommand {
    string logo;
 
    register_interior_subcommand(CLI::App* actionRoot) {
-      auto register_interior = actionRoot->add_subcommand("reginterior", localized("Register a new producer"));
-      register_interior->add_option("account", producer_str, localized("The account to register as a producer(The producer's dapp token contract)"))->required();
+      auto register_interior = actionRoot->add_subcommand("reginterior", localized("Register a new interior"));
+      register_interior->add_option("account", producer_str, localized("The account to register as a interior(The producer's dapp token contract)"))->required();
       register_interior->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
       register_interior->add_option("election_promise", election_promise, localized("Election promise of interior"))->required();
       register_interior->add_option("url", url, localized("url where info about producer can be found"), true);
@@ -1047,7 +1047,7 @@ struct register_frontier_subcommand {
          fc::variant regprod_var = fc::mutable_variant_object()
                   ("frontier", producer_str)
                   ("producer_key", producer_key)
-                  ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio))
+                  ("transfer_ratio", to_dapp_asset(N(led.token), transfer_ratio))
                   ("category", category)
                   ("url", url)
                   ("location", loc)
@@ -1177,8 +1177,8 @@ struct change_ratio_subcommand {
 
       change_ratio->set_callback([this] {
          fc::variant act_payload = fc::mutable_variant_object()
-                  ("producer", producer_str)
-                  ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio));
+                  ("frontier", producer_str)
+                  ("transfer_ratio", to_dapp_asset(N(led.token), transfer_ratio));
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(changeratio), act_payload)});
       });
@@ -1261,7 +1261,7 @@ struct approve_producer_subcommand {
                return;
             }
             EOS_ASSERT( 1 == res.rows.size(), multiple_voter_info, "More than one voter_info for account" );
-            auto prod_vars = res.rows[0]["producers"].get_array();
+            auto prod_vars = res.rows[0]["interiors"].get_array();
             vector<eosio::name> prods;
             for ( auto& x : prod_vars ) {
                prods.push_back( name(x.as_string()) );
@@ -1276,7 +1276,7 @@ struct approve_producer_subcommand {
             fc::variant act_payload = fc::mutable_variant_object()
                ("voter", voter)
                ("proxy", "")
-               ("producers", prods);
+               ("interiors", prods);
             auto accountPermissions = get_account_permissions(tx_permission, {voter,config::active_name});
             send_actions({create_action(accountPermissions, config::system_account_name, N(voteproducer), act_payload)});
       });
@@ -1314,7 +1314,7 @@ struct unapprove_producer_subcommand {
                return;
             }
             EOS_ASSERT( 1 == res.rows.size(), multiple_voter_info, "More than one voter_info for account" );
-            auto prod_vars = res.rows[0]["producers"].get_array();
+            auto prod_vars = res.rows[0]["interiors"].get_array();
             vector<eosio::name> prods;
             for ( auto& x : prod_vars ) {
                prods.push_back( name(x.as_string()) );
@@ -1328,7 +1328,7 @@ struct unapprove_producer_subcommand {
             fc::variant act_payload = fc::mutable_variant_object()
                ("voter", voter)
                ("proxy", "")
-               ("producers", prods);
+               ("interiors", prods);
             auto accountPermissions = get_account_permissions(tx_permission, {voter,config::active_name});
             send_actions({create_action(accountPermissions, config::system_account_name, N(voteproducer), act_payload)});
       });
@@ -1411,7 +1411,7 @@ struct buyservice_subcommand {
    eosio::name producer_name;
 
    buyservice_subcommand(CLI::App* actionRoot) {
-      auto buy_service = actionRoot->add_subcommand("buyservice", localized("Pay for one producers"));
+      auto buy_service = actionRoot->add_subcommand("buyservice", localized("Pay for one frontier"));
       buy_service->add_option("buyer", buyer_str, localized("The pay account"))->required();
       buy_service->add_option("quantity", pay_quantity, localized("pay asset."))->required();
       buy_service->add_option("producer", producer_name, localized("The account to pay for. All options from this position and following will be treated as the producer list."))->required();
@@ -1422,7 +1422,7 @@ struct buyservice_subcommand {
          fc::variant act_payload = fc::mutable_variant_object()
                   ("buyer", buyer_str)
                   ("quantity", to_asset(pay_quantity))
-                  ("producer", producer_name);
+                  ("frontier", producer_name);
          auto accountPermissions = get_account_permissions(tx_permission, {buyer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(buyservice), act_payload)});
       });
@@ -1585,16 +1585,80 @@ struct list_producers_subcommand {
             std::cout << "No producers found" << std::endl;
             return;
          }
-         auto weight = result.total_producer_vote_weight;
-         if ( !weight )
-            weight = 1;
-         printf("%-13s %-57s %-59s %s\n", "Producer", "Producer key", "Url", "Scaled votes");
+         printf("%-13s %-57s %-59s\n", "Producer", "Producer key", "Url");
          for ( auto& row : result.rows )
-            printf("%-13.13s %-57.57s %-59.59s %1.4f\n",
+            printf("%-13.13s %-57.57s %-59.59s\n",
                    row["owner"].as_string().c_str(),
                    row["producer_key"].as_string().c_str(),
-                   row["url"].as_string().c_str(),
-                   row["total_votes"].as_double() / weight);
+                   row["url"].as_string().c_str());
+         if ( !result.more.empty() )
+            std::cout << "-L " << result.more << " for more" << std::endl;
+      });
+   }
+};
+
+struct list_interiors_subcommand {
+   bool print_json = false;
+   uint32_t limit = 50;
+   std::string lower;
+
+   list_interiors_subcommand(CLI::App* actionRoot) {
+      auto list_interiors = actionRoot->add_subcommand("listinteriors", localized("List interiors"));
+      list_interiors->add_flag("--json,-j", print_json, localized("Output in JSON format"));
+      list_interiors->add_option("-l,--limit", limit, localized("The maximum number of rows to return"));
+      list_interiors->add_option("-L,--lower", lower, localized("lower bound value of key, defaults to first"));
+      list_interiors->set_callback([this] {
+         auto rawResult = call(get_interiors_func, fc::mutable_variant_object
+            ("json", true)("lower_bound", lower)("limit", limit));
+         if ( print_json ) {
+            std::cout << fc::json::to_pretty_string(rawResult) << std::endl;
+            return;
+         }
+         auto result = rawResult.as<eosio::chain_apis::read_only::get_interiors_result>();
+         if ( result.rows.empty() ) {
+            std::cout << "No producers found" << std::endl;
+            return;
+         }
+         printf("%-13s %-57s %-59s\n", "Producer", "Election promise", "Vote weights");
+         for ( auto& row : result.rows )
+            printf("%-13.13s %-57.57s %-59.59s\n",
+                   row["owner"].as_string().c_str(),
+                   row["election_promise"].as_string().c_str(),
+                   row["vote_weights"].as_string().c_str());
+         if ( !result.more.empty() )
+            std::cout << "-L " << result.more << " for more" << std::endl;
+      });
+   }
+};
+
+struct list_frontiers_subcommand {
+   bool print_json = false;
+   uint32_t limit = 50;
+   std::string lower;
+
+   list_frontiers_subcommand(CLI::App* actionRoot) {
+      auto list_frontiers = actionRoot->add_subcommand("listfrontiers", localized("List frontiers"));
+      list_frontiers->add_flag("--json,-j", print_json, localized("Output in JSON format"));
+      list_frontiers->add_option("-l,--limit", limit, localized("The maximum number of rows to return"));
+      list_frontiers->add_option("-L,--lower", lower, localized("lower bound value of key, defaults to first"));
+      list_frontiers->set_callback([this] {
+         auto rawResult = call(get_frontiers_func, fc::mutable_variant_object
+            ("json", true)("lower_bound", lower)("limit", limit));
+         if ( print_json ) {
+            std::cout << fc::json::to_pretty_string(rawResult) << std::endl;
+            return;
+         }
+         auto result = rawResult.as<eosio::chain_apis::read_only::get_frontiers_result>();
+         if ( result.rows.empty() ) {
+            std::cout << "No producers found" << std::endl;
+            return;
+         }
+         printf("%-13s %-57s %-59s\n", "Producer", "Category", "Service weight");
+         for ( auto& row : result.rows )
+            printf("%-13.13s %-57.57s %-59.59s\n",
+                   row["owner"].as_string().c_str(),
+                   row["category"].as_string().c_str(),
+                   row["service_weights"].as_string().c_str());
          if ( !result.more.empty() )
             std::cout << "-L " << result.more << " for more" << std::endl;
       });
@@ -2638,8 +2702,8 @@ void get_account( const string& accountName, const string& coresym, bool json_fo
          auto& obj = res.voter_info.get_object();
          string proxy = obj["proxy"].as_string();
          if ( proxy.empty() ) {
-            auto& prods = obj["producers"].get_array();
-            std::cout << "producers:";
+            auto& prods = obj["interiors"].get_array();
+            std::cout << "interiors:";
             if ( !prods.empty() ) {
                for ( size_t i = 0; i < prods.size(); ++i ) {
                   if ( i%3 == 0 ) {
@@ -2675,6 +2739,7 @@ int main( int argc, char** argv ) {
    setlocale(LC_ALL, "");
    bindtextdomain(locale_domain, locale_path);
    textdomain(locale_domain);
+   fc::logger::get(DEFAULT_LOGGER).set_log_level(fc::log_level::debug);
    context = eosio::client::http::create_http_context();
    wallet_url = default_wallet_url;
 
@@ -4241,6 +4306,8 @@ int main( int argc, char** argv ) {
    // auto unapproveProducer = unapprove_producer_subcommand(voteProducer);
 
    auto listProducers = list_producers_subcommand(system);
+   auto listFrontiers = list_frontiers_subcommand(system);
+   auto listInteriors = list_interiors_subcommand(system);
 
    auto delegateBandWidth = delegate_bandwidth_subcommand(system);
    auto undelegateBandWidth = undelegate_bandwidth_subcommand(system);

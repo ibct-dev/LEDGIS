@@ -22,7 +22,7 @@ cp -R ${BUILD_DIR}/licenses/eosio/* ${EOS_PREFIX}/licenses || exit 1
 #cp -R ${BUILD_DIR}/lib/* ${EOS_PREFIX}/lib
 
 # install cmake modules
-#sed "s/_PREFIX_/\/${SPREFIX}/g" ${BUILD_DIR}/modules/EosioTesterPackage.cmake &> ${EOS_PREFIX}/lib/cmake/${PROJECT}/EosioTester.cmake
+#sed "s/_PREFIX_/\/${SPREFIX}/g" ${BUILD_DIR}/modules/LEDTesterPackage.cmake &> ${EOS_PREFIX}/lib/cmake/${PROJECT}/LEDTester.cmake
 #sed "s/_PREFIX_/\/${SPREFIX}\/${SSUBPREFIX}/g" ${BUILD_DIR}/modules/${PROJECT}-config.cmake.package &> ${EOS_PREFIX}/lib/cmake/${PROJECT}/${PROJECT}-config.cmake
 
 # install includes
@@ -31,7 +31,7 @@ cp -R ${BUILD_DIR}/licenses/eosio/* ${EOS_PREFIX}/licenses || exit 1
 # make symlinks
 #pushd ${PREFIX}/lib/cmake/${PROJECT} &> /dev/null
 #ln -sf ../../../${SUBPREFIX}/lib/cmake/${PROJECT}/${PROJECT}-config.cmake ${PROJECT}-config.cmake
-#ln -sf ../../../${SUBPREFIX}/lib/cmake/${PROJECT}/EosioTester.cmake EosioTester.cmake
+#ln -sf ../../../${SUBPREFIX}/lib/cmake/${PROJECT}/LEDTester.cmake LEDTester.cmake
 #popd &> /dev/null
 
 for f in $(ls "${BUILD_DIR}/bin/"); do

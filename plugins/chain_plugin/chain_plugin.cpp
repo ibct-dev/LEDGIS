@@ -1239,7 +1239,7 @@ fc::microseconds chain_plugin::get_abi_serializer_max_time() const {
    return my->abi_serializer_max_time_ms;
 }
 
-void chain_plugin::log_guard_exception(const chain::guard_exception&e ) const {
+void chain_plugin::log_guard_exception(const chain::guard_exception&e ) {
    if (e.code() == chain::database_guard_exception::code_value) {
       elog("Database has reached an unsafe level of usage, shutting down to avoid corrupting the database.  "
            "Please increase the value set for \"chain-state-db-size-mb\" and restart the process!");
@@ -1251,7 +1251,7 @@ void chain_plugin::log_guard_exception(const chain::guard_exception&e ) const {
    dlog("Details: ${details}", ("details", e.to_detail_string()));
 }
 
-void chain_plugin::handle_guard_exception(const chain::guard_exception& e) const {
+void chain_plugin::handle_guard_exception(const chain::guard_exception& e) {
    log_guard_exception(e);
 
    // quit the app
@@ -1262,6 +1262,12 @@ void chain_plugin::handle_db_exhaustion() {
    elog("database memory exhausted: increase chain-state-db-size-mb and/or reversible-blocks-db-size-mb");
    //return 1 -- it's what programs/nodeos/main.cpp considers "BAD_ALLOC"
    std::_Exit(1);
+}
+
+void chain_plugin::handle_bad_alloc() {
+   elog("std::bad_alloc - memory exhausted");
+   //return -2 -- it's what programs/nodeos/main.cpp reports for std::exception
+   std::_Exit(-2);
 }
 
 namespace chain_apis {
@@ -1659,19 +1665,76 @@ read_only::get_producers_result read_only::get_producers( const read_only::get_p
    const auto& d = db.db();
    const auto lower = name{p.lower_bound};
 
-   static const uint8_t secondary_index_num = 0;
    const auto* const table_id = d.find<chain::table_id_object, chain::by_code_scope_table>(
            boost::make_tuple(config::system_account_name, config::system_account_name, N(producers)));
+   EOS_ASSERT(table_id, chain::contract_table_query_exception, "Missing producers table");
+
+   read_only::get_producers_result result;
+   const auto stopTime = fc::time_point::now() + fc::microseconds(1000 * 10); // 10ms
+   vector<char> data;
+
+   const auto& kv_index = d.get_index<key_value_index, by_scope_primary>();
+   auto upper_bound_lookup_tuple = kv_index.upper_bound(boost::make_tuple( table_id->id, std::numeric_limits<uint64_t>::max()));
+
+   auto it = [&]{
+      if(lower.value == 0)
+         return kv_index.lower_bound(
+            boost::make_tuple(table_id->id, std::numeric_limits<uint64_t>::lowest()));
+      else
+         return kv_index.lower_bound(
+               boost::make_tuple(table_id->id, lower.value));
+   }();
+
+   for( ; it != upper_bound_lookup_tuple ; ++it ) {
+      if (result.rows.size() >= p.limit || fc::time_point::now() > stopTime) {
+         result.more = name{it->primary_key}.to_string();
+         break;
+      }
+      copy_inline_row(*kv_index.find(boost::make_tuple(table_id->id, it->primary_key)), data);
+      if (p.json)
+         result.rows.emplace_back( abis.binary_to_variant( abis.get_table_type(N(producers)), data, abi_serializer_max_time, shorten_abi_errors ) );
+      else
+         result.rows.emplace_back(fc::variant(data));
+   }
+
+   return result;
+} catch (...) {
+   read_only::get_producers_result result;
+
+   for (auto p : db.active_producers().producers) {
+      fc::variant row = fc::mutable_variant_object()
+         ("owner", p.producer_name)
+         ("producer_key", p.block_signing_key)
+         ("url", "");
+
+      result.rows.push_back(row);
+   }
+
+   return result;
+}
+
+read_only::get_interiors_result read_only::get_interiors( const read_only::get_interiors_params& p ) const try {
+   const abi_def abi = eosio::chain_apis::get_abi(db, config::system_account_name);
+   const auto table_type = get_table_type(abi, N(interiors));
+   const abi_serializer abis{ abi, abi_serializer_max_time };
+   EOS_ASSERT(table_type == KEYi64, chain::contract_table_query_exception, "Invalid table type ${type} for table interiors", ("type",table_type));
+
+   const auto& d = db.db();
+   const auto lower = name{p.lower_bound};
+
+   static const uint8_t secondary_index_num = 0;
+   const auto* const table_id = d.find<chain::table_id_object, chain::by_code_scope_table>(
+           boost::make_tuple(config::system_account_name, config::system_account_name, N(interiors)));
    const auto* const secondary_table_id = d.find<chain::table_id_object, chain::by_code_scope_table>(
-           boost::make_tuple(config::system_account_name, config::system_account_name, N(producers) | secondary_index_num));
-   EOS_ASSERT(table_id && secondary_table_id, chain::contract_table_query_exception, "Missing producers table");
+           boost::make_tuple(config::system_account_name, config::system_account_name, N(interiors) | secondary_index_num));
+   EOS_ASSERT(table_id && secondary_table_id, chain::contract_table_query_exception, "Missing interiors table");
 
    const auto& kv_index = d.get_index<key_value_index, by_scope_primary>();
    const auto& secondary_index = d.get_index<index_double_index>().indices();
    const auto& secondary_index_by_primary = secondary_index.get<by_primary>();
    const auto& secondary_index_by_secondary = secondary_index.get<by_secondary>();
 
-   read_only::get_producers_result result;
+   read_only::get_interiors_result result;
    const auto stopTime = fc::time_point::now() + fc::microseconds(1000 * 10); // 10ms
    vector<char> data;
 
@@ -1692,22 +1755,81 @@ read_only::get_producers_result read_only::get_producers( const read_only::get_p
       }
       copy_inline_row(*kv_index.find(boost::make_tuple(table_id->id, it->primary_key)), data);
       if (p.json)
-         result.rows.emplace_back( abis.binary_to_variant( abis.get_table_type(N(producers)), data, abi_serializer_max_time, shorten_abi_errors ) );
+         result.rows.emplace_back( abis.binary_to_variant( abis.get_table_type(N(interiors)), data, abi_serializer_max_time, shorten_abi_errors ) );
       else
          result.rows.emplace_back(fc::variant(data));
    }
 
-   result.total_producer_vote_weight = get_global_row(d, abi, abis, abi_serializer_max_time, shorten_abi_errors)["total_producer_vote_weight"].as_double();
    return result;
 } catch (...) {
-   read_only::get_producers_result result;
+   read_only::get_interiors_result result;
 
    for (auto p : db.active_producers().producers) {
       fc::variant row = fc::mutable_variant_object()
          ("owner", p.producer_name)
-         ("producer_key", p.block_signing_key)
-         ("url", "")
-         ("total_votes", 0.0f);
+         ("election_promise", "")
+         ("vote_weights", "");
+      result.rows.push_back(row);
+   }
+
+   return result;
+}
+
+read_only::get_frontiers_result read_only::get_frontiers( const read_only::get_frontiers_params& p ) const try {
+   const abi_def abi = eosio::chain_apis::get_abi(db, config::system_account_name);
+   const auto table_type = get_table_type(abi, N(frontiers));
+   const abi_serializer abis{ abi, abi_serializer_max_time };
+   EOS_ASSERT(table_type == KEYi64, chain::contract_table_query_exception, "Invalid table type ${type} for table frontiers", ("type",table_type));
+
+   const auto& d = db.db();
+   const auto lower = name{p.lower_bound};
+
+   static const uint8_t secondary_index_num = 0;
+   const auto* const table_id = d.find<chain::table_id_object, chain::by_code_scope_table>(
+           boost::make_tuple(config::system_account_name, config::system_account_name, N(frontiers)));
+   const auto* const secondary_table_id = d.find<chain::table_id_object, chain::by_code_scope_table>(
+           boost::make_tuple(config::system_account_name, config::system_account_name, N(frontiers) | secondary_index_num));
+   EOS_ASSERT(table_id && secondary_table_id, chain::contract_table_query_exception, "Missing frontiers table");
+
+   const auto& kv_index = d.get_index<key_value_index, by_scope_primary>();
+   const auto& secondary_index = d.get_index<index_double_index>().indices();
+   const auto& secondary_index_by_primary = secondary_index.get<by_primary>();
+   const auto& secondary_index_by_secondary = secondary_index.get<by_secondary>();
+
+   read_only::get_frontiers_result result;
+   const auto stopTime = fc::time_point::now() + fc::microseconds(1000 * 10); // 10ms
+   vector<char> data;
+
+   auto it = [&]{
+      if(lower.value == 0)
+         return secondary_index_by_secondary.lower_bound(
+            boost::make_tuple(secondary_table_id->id, to_softfloat64(std::numeric_limits<double>::lowest()), 0));
+      else
+         return secondary_index.project<by_secondary>(
+            secondary_index_by_primary.lower_bound(
+               boost::make_tuple(secondary_table_id->id, lower.value)));
+   }();
+
+   for( ; it != secondary_index_by_secondary.end() && it->t_id == secondary_table_id->id; ++it ) {
+      if (result.rows.size() >= p.limit || fc::time_point::now() > stopTime) {
+         result.more = name{it->primary_key}.to_string();
+         break;
+      }
+      copy_inline_row(*kv_index.find(boost::make_tuple(table_id->id, it->primary_key)), data);
+      if (p.json)
+         result.rows.emplace_back( abis.binary_to_variant( abis.get_table_type(N(frontiers)), data, abi_serializer_max_time, shorten_abi_errors ) );
+      else
+         result.rows.emplace_back(fc::variant(data));
+   }
+   return result;
+} catch (...) {
+   read_only::get_frontiers_result result;
+
+   for (auto p : db.active_producers().producers) {
+      fc::variant row = fc::mutable_variant_object()
+         ("owner", p.producer_name)
+         ("category", "")
+         ("service_weights", "");
 
       result.rows.push_back(row);
    }
@@ -1885,6 +2007,8 @@ void read_write::push_block(read_write::push_block_params&& params, next_functio
       next(read_write::push_block_results{});
    } catch ( boost::interprocess::bad_alloc& ) {
       chain_plugin::handle_db_exhaustion();
+   } catch ( const std::bad_alloc& ) {
+      chain_plugin::handle_bad_alloc();
    } CATCH_AND_CALL(next);
 }
 
@@ -1966,6 +2090,8 @@ void read_write::push_transaction(const read_write::push_transaction_params& par
       });
    } catch ( boost::interprocess::bad_alloc& ) {
       chain_plugin::handle_db_exhaustion();
+   } catch ( const std::bad_alloc& ) {
+      chain_plugin::handle_bad_alloc();
    } CATCH_AND_CALL(next);
 }
 
@@ -2000,6 +2126,8 @@ void read_write::push_transactions(const read_write::push_transactions_params& p
       push_recurse(this, 0, params_copy, result, next);
    } catch ( boost::interprocess::bad_alloc& ) {
       chain_plugin::handle_db_exhaustion();
+   } catch ( const std::bad_alloc& ) {
+      chain_plugin::handle_bad_alloc();
    } CATCH_AND_CALL(next);
 }
 
@@ -2035,6 +2163,8 @@ void read_write::send_transaction(const read_write::send_transaction_params& par
       });
    } catch ( boost::interprocess::bad_alloc& ) {
       chain_plugin::handle_db_exhaustion();
+   } catch ( const std::bad_alloc& ) {
+      chain_plugin::handle_bad_alloc();
    } CATCH_AND_CALL(next);
 }
 
