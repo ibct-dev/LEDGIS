@@ -119,9 +119,9 @@ function previous-install-prompt() {
 }
 
 function resources() {
-    echo "${COLOR_CYAN}EOS Chrome website:${COLOR_NC} https://kr.eoschrome.io"
-    echo "${COLOR_CYAN}EOS Chrome medium:${COLOR_NC} https://medium.com/eoschrome"
-    echo "${COLOR_CYAN}EOS Chrome Telegram channel:${COLOR_NC} https://t.me/eos_chrome"
+    echo "${COLOR_CYAN}Ledgis website:${COLOR_NC} https://ledgis.io"
+    echo "${COLOR_CYAN}Ledgis medium:${COLOR_NC} https://medium.com/ledgis"
+    echo "${COLOR_CYAN}Ledgis Telegram channel:${COLOR_NC} https://t.me/ledgis"
 }
 
 function print_supported_linux_distros_and_exit() {

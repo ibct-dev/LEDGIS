@@ -983,7 +983,6 @@ struct register_interior_subcommand {
    string election_promise;
    string url;
    uint16_t loc = 0;
-   string city;
    string logo;
 
    register_interior_subcommand(CLI::App* actionRoot) {
@@ -992,8 +991,7 @@ struct register_interior_subcommand {
       register_interior->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
       register_interior->add_option("election_promise", election_promise, localized("Election promise of interior"))->required();
       register_interior->add_option("url", url, localized("url where info about producer can be found"), true);
-      register_interior->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
-      register_interior->add_option("city", city, localized("a city representing a producer"), true);
+      register_interior->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling(ISO 3166-1 Numeric)"), true);
       register_interior->add_option("logo", logo, localized("logo representing the producer"), true);
       add_standard_transaction_options(register_interior, "account@active");
 
@@ -1008,7 +1006,6 @@ struct register_interior_subcommand {
                   ("election_promise", election_promise)
                   ("url", url)
                   ("location", loc)
-                  ("city", city)
                   ("logo_256", logo);
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          
@@ -1021,10 +1018,9 @@ struct register_frontier_subcommand {
    string producer_str;
    string producer_key_str;
    string transfer_ratio;
-   string category;
+   uint8_t category;
    string url;
    uint16_t loc = 0;
-   string city;
    string logo;
 
    register_frontier_subcommand(CLI::App* actionRoot) {
@@ -1032,10 +1028,28 @@ struct register_frontier_subcommand {
       register_frontier->add_option("account", producer_str, localized("The account to register as a producer(The producer's dapp token contract)"))->required();
       register_frontier->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
       register_frontier->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
-      register_frontier->add_option("category", category, localized("Category of frontier's DApp"))->required();
+      register_frontier->add_option("category", category, localized("Category of frontier's DApp\n"
+                                          "\t0\t => Games\n"
+                                          "\t1\t => Gambling\n"
+                                          "\t2\t => Social\n"
+                                          "\t3\t => Finance\n"
+                                          "\t4\t => High risk\n"
+                                          "\t5\t => Exchanges\n"
+                                          "\t6\t => Development\n"
+                                          "\t7\t => Media\n"
+                                          "\t8\t => Wallet\n"
+                                          "\t9\t => Marketplaces\n"
+                                          "\t10\t => Security\n"
+                                          "\t11\t => Governance\n"
+                                          "\t12\t => Property\n"
+                                          "\t13\t => Storage\n"
+                                          "\t14\t => Identity\n"
+                                          "\t15\t => Energy\n"
+                                          "\t16\t => Health\n"
+                                          "\t17\t => Insurance\n"
+                                          "\t18\t => Other\n"))->required();
       register_frontier->add_option("url", url, localized("url where info about producer can be found"), true);
-      register_frontier->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
-      register_frontier->add_option("city", city, localized("a city representing a producer"), true);
+      register_frontier->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling(ISO 3166-1 Numeric)"), true);
       register_frontier->add_option("logo", logo, localized("logo representing the producer"), true);
       add_standard_transaction_options(register_frontier, "account@active");
 
@@ -1051,7 +1065,6 @@ struct register_frontier_subcommand {
                   ("category", category)
                   ("url", url)
                   ("location", loc)
-                  ("city", city)
                   ("logo_256", logo);
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          
@@ -1988,13 +2001,10 @@ struct claimrewards_subcommand {
 
 struct regproxy_subcommand {
    string proxy;
-   string name;
    string slogan;
-   string philosophy;
    string background;
-   string website;
    string url;
-   string city;
+   uint16_t loc = 0;
    string logo_256;
 
    regproxy_subcommand(CLI::App* actionRoot) {
@@ -2003,7 +2013,7 @@ struct regproxy_subcommand {
       register_proxy->add_option("slogan", slogan, localized("proxy's short description"))->required();
       register_proxy->add_option("background", background, localized("who is the proxy?"))->required();
       register_proxy->add_option("url", url, localized("url to website"), true);
-      register_proxy->add_option("city", city, localized("a city representing a proxy"), true);
+      register_proxy->add_option("location", loc, localized("a location representing a proxy(ISO 3166-1 Numeric)"), true);
       register_proxy->add_option("logo_256", logo_256, localized("url to an image with the size of 256 x 256 px"), true);
       add_standard_transaction_options(register_proxy, "proxy@active");
 
@@ -2013,7 +2023,7 @@ struct regproxy_subcommand {
                   ("slogan", slogan)
                   ("background", background)
                   ("url", url)
-                  ("city", city)
+                  ("location", loc)
                   ("logo_256", logo_256);
          auto accountPermissions = get_account_permissions(tx_permission, {proxy,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproxy), act_payload)});

@@ -223,8 +223,8 @@ echo "cd ${BUILD_DIR} && ${PATH_TO_USE} make test" # PATH is set as currently 'm
 echo ""
 
 echo "${COLOR_BLUE}For more information:${COLOR_NC}"
-echo "${COLOR_BLUE}EOS Chrome website: https://kr.eoschrome.io${COLOR_NC}"
-echo "${COLOR_BLUE}EOS Chrome medium: https://medium.com/eoschrome${COLOR_NC}"
-echo "${COLOR_BLUE}EOS Chrome Telegram channel: https://t.me/eos_chrome${COLOR_NC}"
+echo "${COLOR_BLUE}Ledgis website: https://ledgis.io${COLOR_NC}"
+echo "${COLOR_BLUE}Ledgis medium: https://medium.com/ledgis${COLOR_NC}"
+echo "${COLOR_BLUE}Ledgis Telegram channel: https://t.me/ledgis${COLOR_NC}"
 
 echo ""

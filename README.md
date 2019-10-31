@@ -9,6 +9,7 @@ $ git clone https://github.com/ibct-dev/LEDGIS --recursive
 $ cd LEDGIS
 $ sudo ./scripts/led_build -s "SYSTEM TOKEN NAME"
 $ sudo ./scripts/led_install
+
 ```
 
 #### Build Script Uninstall
@@ -45,10 +46,10 @@ LEDGIS currently supports the following operating systems:
 
 <!-- ## Resources
 
-- [Website](https://kr.eoschrome.io/)
+- [Website](https://ledgis.io/)
 
-- [Telegram](https://t.me/eos_chrome)
+- [Telegram](https://t.me/ledgis)
 
-- [Medium](https://medium.com/eoschrome)
+- [Medium](https://medium.com/ledgis)
 
 - [Developer Portal](https://developers.eos.io) -->
