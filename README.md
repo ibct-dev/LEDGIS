@@ -9,6 +9,7 @@ $ git clone https://github.com/ibct-dev/LEDGIS --recursive
 $ cd LEDGIS
 $ sudo ./scripts/led_build -s "SYSTEM TOKEN NAME"
 $ sudo ./scripts/led_install
+
 ```
 
 #### Build Script Uninstall
