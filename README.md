@@ -45,10 +45,10 @@ LEDGIS currently supports the following operating systems:
 
 <!-- ## Resources
 
-- [Website](https://kr.eoschrome.io/)
+- [Website](https://ledgis.io/)
 
-- [Telegram](https://t.me/eos_chrome)
+- [Telegram](https://t.me/ledgis)
 
-- [Medium](https://medium.com/eoschrome)
+- [Medium](https://medium.com/ledgis)
 
 - [Developer Portal](https://developers.eos.io) -->
