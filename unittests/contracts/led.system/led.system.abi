@@ -486,8 +486,16 @@
                     "type": "float64"
                 },
                 {
+                    "name": "url",
+                    "type": "string"
+                },
+                {
                     "name": "category",
                     "type": "uint8"
+                },
+                {
+                    "name": "logo_256",
+                    "type": "string"
                 },
                 {
                     "name": "buyers",
@@ -578,7 +586,15 @@
                     "type": "bool"
                 },
                 {
+                    "name": "url",
+                    "type": "string"
+                },
+                {
                     "name": "election_promise",
+                    "type": "string"
+                },
+                {
+                    "name": "logo_256",
                     "type": "string"
                 },
                 {
