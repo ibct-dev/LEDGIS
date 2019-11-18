@@ -982,7 +982,6 @@ struct create_account_subcommand {
    string account_name;
    string owner_key_str;
    string active_key_str;
-   bool simple;
 
    create_account_subcommand(CLI::App* actionRoot) {
       auto createAccount = actionRoot->add_subcommand("newaccount",localized("Create a new account on the blockchain "));
