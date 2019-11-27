@@ -264,16 +264,16 @@ struct tps_test_gen_plugin_impl
       act_a.name = N(submitdapa);
       act_a.authorization = vector<permission_level>{{newaccountT, config::active_name}};
       act_a.data = led_system_serializer.variant_to_binary("submitdapa",
-                                                           fc::json::from_string(fc::format_string("{\"proposal_business\":\"testa\",\"hashed_data\":\"${hashed_data}\",\"state\":\"pending\"}",
-                                                                                                   fc::mutable_variant_object()("hashed_data", hashed_data_A))),
+                                                           fc::json::from_string(fc::format_string("{\"proposal_business\":\"testa\",\"hashed_data\":\"${hashed_data}\",\"state\":\"${l}\"}",
+                                                                                                   fc::mutable_variant_object()("hashed_data", hashed_data_A)("l",salt))),
                                                            abi_serializer_max_time);
 
       act_b.account = newaccountT;
       act_b.name = N(submitdapa);
       act_b.authorization = vector<permission_level>{{newaccountT, config::active_name}};
       act_b.data = led_system_serializer.variant_to_binary("submitdapa",
-                                                           fc::json::from_string(fc::format_string("{\"proposal_business\":\"testb\",\"hashed_data\":\"${hashed_data}\",\"state\":\"pending\"}",
-                                                                                                   fc::mutable_variant_object()("hashed_data", hashed_data_B))),
+                                                           fc::json::from_string(fc::format_string("{\"proposal_business\":\"testb\",\"hashed_data\":\"${hashed_data}\",\"state\":\"${l}\"}",
+                                                                                                   fc::mutable_variant_object()("hashed_data", hashed_data_B)("l",salt))),
                                                            abi_serializer_max_time);
 
       timer_timeout = period;
