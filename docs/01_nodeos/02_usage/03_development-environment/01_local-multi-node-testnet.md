@@ -92,10 +92,10 @@ This creates a special producer, known as the "bios" producer. Assuming everythi
 
 The following commands assume that you are running this tutorial from the `eos\build` directory, from which you ran `./eosio_build.sh` to build the EOSIO binaries.
 
-To start additional nodes, you must first load the `eosio.bios` contract. This contract enables you to have direct control over the resource allocation of other accounts and to access other privileged API calls. Return to the second terminal window and run the following command to load the contract:
+To start additional nodes, you must first load the `led.bios` contract. This contract enables you to have direct control over the resource allocation of other accounts and to access other privileged API calls. Return to the second terminal window and run the following command to load the contract:
 
 ```sh
-cleos --wallet-url http://127.0.0.1:8899 set contract eosio build/contracts/eosio.bios
+cleos --wallet-url http://127.0.0.1:8899 set contract eosio build/contracts/led.bios
 ```
 
 We will create an account to become a producer, using the account name `inita`.  To create the account, we need to generate keys to associate with the account, and import those into our wallet.
@@ -134,7 +134,7 @@ cleos --wallet-url http://127.0.0.1:8899 create account eosio inita EOS6hMjoWRF2
 
 ```console
 executed transaction: d1ea511977803d2d88f46deb554f5b6cce355b9cc3174bec0da45fc16fe9d5f3  352 bytes  102400 cycles
-#         eosio <= eosio::newaccount            {"creator":"eosio","name":"inita","owner":{"threshold":1,"keys":[{"key":"EOS6hMjoWRF2L8x9YpeqtUEcsDK...
+#         eosio <= eosio::newaccount            {"creator":"led","name":"inita","owner":{"threshold":1,"keys":[{"key":"EOS6hMjoWRF2L8x9YpeqtUEcsDK...
 ```
 
 We now have an account that is available to have a contract assigned to it, enabling it to do meaningful work. In other tutorials, the account has been used to establish simple contracts. In this case, the account will be designated as a block producer.

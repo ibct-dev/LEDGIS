@@ -89,7 +89,7 @@ mongodb-filter-out = blocktwitter::
 * `accounts` - created on applied transaction. Always updated even if `mongodb-store-action-traces=false`.
   * Currently limited to just name and ABI if contract abi on account
   * Mostly for internal use as the stored ABI is used to convert action data into JSON for storage as associated actions on contract are processed.
-  * Invalid ABI on account will prevent conversion of action data into JSON for storage resulting in just the action data being stored as hex. For example, the original eosio.system contract did not provide ABI for the `onblock` action and therefore all `onblock` action data is stored as hex until the time `onblock` ABI is added to the eosio.system contract.
+  * Invalid ABI on account will prevent conversion of action data into JSON for storage resulting in just the action data being stored as hex. For example, the original led.system contract did not provide ABI for the `onblock` action and therefore all `onblock` action data is stored as hex until the time `onblock` ABI is added to the led.system contract.
 
 * `action_traces` - created on applied transaction
   * `receipt` - action_trace action_receipt - see `eosio::chain::action_receipt`

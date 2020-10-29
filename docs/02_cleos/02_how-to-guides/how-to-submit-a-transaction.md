@@ -24,7 +24,7 @@ Push a transaction
   "delay_sec": 0,
   "context_free_actions": [],
   "actions": [{
-      "account": "eosio.token",
+      "account": "led.token",
       "name": "transfer",
       "authorization": [{
           "actor": "han",
@@ -54,7 +54,7 @@ Push a transaction
   "delay_sec": 0,
   "context_free_actions": [],
   "actions": [{
-      "account": "eosio.token",
+      "account": "led.token",
       "name": "transfer",
       "authorization": [{
           "actor": "han",
@@ -63,7 +63,7 @@ Push a transaction
       ],
       "data": {
         "from": "han",
-        "to": "eosio",
+        "to": "led",
         "quantity": "0.0001 SYS",
         "memo": "m"
       }

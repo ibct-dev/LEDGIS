@@ -63,7 +63,7 @@ should be used to sign transaction
 
 ```sh
 #Link a `voteproducer` action to the 'voting' permissions
-cleos set action permission sandwichfarm eosio.system voteproducer voting -p sandwichfarm@voting
+cleos set action permission sandwichfarm led.system voteproducer voting -p sandwichfarm@voting
 
 #Now can execute the transaction with the previously set permissions. 
 cleos system voteproducer approve sandwichfarm someproducer -p sandwichfarm@voting

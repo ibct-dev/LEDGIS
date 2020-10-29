@@ -52,7 +52,7 @@ nodeos \
 The above `nodeos` command starts a producing node by:
 
 * enabling block production (`-e`)
-* identifying itself as block producer "eosio" (`-p`)
+* identifying itself as block producer "led" (`-p`)
 * setting the blockchain data directory (`--data-dir`)
 * setting the `config.ini` directory (`--config-dir`)
 * loading plugins `producer_plugin`, `chain_plugin`, `http_plugin`, `state_history_plugin` (`--plugin`)
