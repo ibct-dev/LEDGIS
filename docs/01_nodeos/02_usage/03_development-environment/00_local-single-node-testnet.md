@@ -67,7 +67,7 @@ This should produce output that looks similar to this:
   "last_irreversible_block_id": "00000085060e9872849ef87bef3b19ab07de9faaed71154510c7f0aeeaddae2c",
   "head_block_id": "000000861e3222dce1c7c2cfb938940d8aac22c816cc8b0b89f6bf65a8ad5bdc",
   "head_block_time": "2019-11-18T22:13:10.500",
-  "head_block_producer": "eosio",
+  "head_block_producer": "led",
   "virtual_block_cpu_limit": 228396,
   "virtual_block_net_limit": 1197744,
   "block_cpu_limit": 199900,

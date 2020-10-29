@@ -13,10 +13,10 @@ Retrieve the balance of an account for a given currency
 There are no options for this subcommand
 
 ## Example
-Get balance of eosio from eosio.token contract for SYS symbol. 
+Get balance of eosio from led.token contract for SYS symbol. 
 
 ```sh
-cleos get currency balance eosio.token eosio SYS
+cleos get currency balance led.token eosio SYS
 ```
 ```console
 999999920.0000 SYS

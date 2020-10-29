@@ -40,7 +40,7 @@ void validate_authority_precondition( const apply_context& context, const author
       if( a.permission.permission == config::owner_name || a.permission.permission == config::active_name )
          continue; // account was already checked to exist, so its owner and active permissions should exist
 
-      if( a.permission.permission == config::eosio_code_name ) // virtual eosio.code permission does not really exist but is allowed
+      if( a.permission.permission == config::eosio_code_name ) // virtual led.code permission does not really exist but is allowed
          continue;
 
       try {
@@ -63,11 +63,11 @@ void validate_authority_precondition( const apply_context& context, const author
 /**
  *  This method is called assuming precondition_system_newaccount succeeds a
  */
-void apply_eosio_newaccount(apply_context& context) {
+void apply_led_newaccount(apply_context& context) {
    auto create = context.get_action().data_as<newaccount>();
    try {
    context.require_authorization(create.creator);
-//   context.require_write_lock( config::eosio_auth_scope );
+//   context.require_write_lock( config::led_auth_scope );
    auto& authorization = context.control.get_mutable_authorization_manager();
 
    EOS_ASSERT( validate(create.owner), action_validate_exception, "Invalid owner authority");
@@ -83,8 +83,8 @@ void apply_eosio_newaccount(apply_context& context) {
    // Check if the creator is privileged
    const auto &creator = db.get<account_metadata_object, by_name>(create.creator);
    if( !creator.is_privileged() ) {
-      EOS_ASSERT( name_str.find( "eosio." ) != 0, action_validate_exception,
-                  "only privileged accounts can have names that start with 'eosio.'" );
+      EOS_ASSERT( name_str.find( "led." ) != 0, action_validate_exception,
+                  "only privileged accounts can have names that start with 'led.'" );
    }
 
    auto existing_account = db.find<account_object, by_name>(create.name);
@@ -121,7 +121,7 @@ void apply_eosio_newaccount(apply_context& context) {
 
 } FC_CAPTURE_AND_RETHROW( (create) ) }
 
-void apply_eosio_setcode(apply_context& context) {
+void apply_led_setcode(apply_context& context) {
    const auto& cfg = context.control.get_global_properties().configuration;
 
    auto& db = context.db;
@@ -195,7 +195,7 @@ void apply_eosio_setcode(apply_context& context) {
    }
 }
 
-void apply_eosio_setabi(apply_context& context) {
+void apply_led_setabi(apply_context& context) {
    auto& db  = context.db;
    auto  act = context.get_action().data_as<setabi>();
 
@@ -226,7 +226,7 @@ void apply_eosio_setabi(apply_context& context) {
    }
 }
 
-void apply_eosio_updateauth(apply_context& context) {
+void apply_led_updateauth(apply_context& context) {
 
    auto update = context.get_action().data_as<updateauth>();
    context.require_authorization(update.account); // only here to mark the single authority on this action as used
@@ -235,8 +235,8 @@ void apply_eosio_updateauth(apply_context& context) {
    auto& db = context.db;
 
    EOS_ASSERT(!update.permission.empty(), action_validate_exception, "Cannot create authority with empty name");
-   EOS_ASSERT( update.permission.to_string().find( "eosio." ) != 0, action_validate_exception,
-               "Permission names that start with 'eosio.' are reserved" );
+   EOS_ASSERT( update.permission.to_string().find( "led." ) != 0, action_validate_exception,
+               "Permission names that start with 'led.' are reserved" );
    EOS_ASSERT(update.permission != update.parent, action_validate_exception, "Cannot set an authority as its own parent");
    db.get<account_object, by_name>(update.account);
    EOS_ASSERT(validate(update.auth), action_validate_exception,
@@ -290,8 +290,8 @@ void apply_eosio_updateauth(apply_context& context) {
    }
 }
 
-void apply_eosio_deleteauth(apply_context& context) {
-//   context.require_write_lock( config::eosio_auth_scope );
+void apply_led_deleteauth(apply_context& context) {
+//   context.require_write_lock( config::led_auth_scope );
 
    auto remove = context.get_action().data_as<deleteauth>();
    context.require_authorization(remove.account); // only here to mark the single authority on this action as used
@@ -321,8 +321,8 @@ void apply_eosio_deleteauth(apply_context& context) {
 
 }
 
-void apply_eosio_linkauth(apply_context& context) {
-//   context.require_write_lock( config::eosio_auth_scope );
+void apply_led_linkauth(apply_context& context) {
+//   context.require_write_lock( config::led_auth_scope );
 
    auto requirement = context.get_action().data_as<linkauth>();
    try {
@@ -337,7 +337,7 @@ void apply_eosio_linkauth(apply_context& context) {
       const auto *code = db.find<account_object, by_name>(requirement.code);
       EOS_ASSERT(code != nullptr, account_query_exception,
                  "Failed to retrieve code for account: ${account}", ("account", requirement.code));
-      if( requirement.requirement != config::eosio_any_name ) {
+      if( requirement.requirement != config::led_any_name ) {
          const permission_object* permission = nullptr;
          if( context.control.is_builtin_activated( builtin_protocol_feature_t::only_link_to_existing_permission ) ) {
             permission = db.find<permission_object, by_owner>(
@@ -377,8 +377,8 @@ void apply_eosio_linkauth(apply_context& context) {
   } FC_CAPTURE_AND_RETHROW((requirement))
 }
 
-void apply_eosio_unlinkauth(apply_context& context) {
-//   context.require_write_lock( config::eosio_auth_scope );
+void apply_led_unlinkauth(apply_context& context) {
+//   context.require_write_lock( config::led_auth_scope );
 
    auto& db = context.db;
    auto unlink = context.get_action().data_as<unlinkauth>();
@@ -396,7 +396,7 @@ void apply_eosio_unlinkauth(apply_context& context) {
    db.remove(*link);
 }
 
-void apply_eosio_canceldelay(apply_context& context) {
+void apply_led_canceldelay(apply_context& context) {
    auto cancel = context.get_action().data_as<canceldelay>();
    context.require_authorization(cancel.canceling_auth.actor); // only here to mark the single authority on this action as used
 

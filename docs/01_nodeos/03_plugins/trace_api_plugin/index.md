@@ -96,9 +96,9 @@ Here is a `nodeos` configuration example for the `trace_api_plugin` when tracing
 nodeos --data-dir data_dir --config-dir config_dir --trace-dir traces_dir
 --plugin eosio::trace_api_plugin 
 --trace-rpc-abi=eosio=abis/eosio.abi 
---trace-rpc-abi=eosio.token=abis/eosio.token.abi 
---trace-rpc-abi=eosio.msig=abis/eosio.msig.abi 
---trace-rpc-abi=eosio.wrap=abis/eosio.wrap.abi
+--trace-rpc-abi=led.token=abis/led.token.abi 
+--trace-rpc-abi=led.msig=abis/led.msig.abi 
+--trace-rpc-abi=led.wrap=abis/led.wrap.abi
 ```
 
 ## Maintenance Note

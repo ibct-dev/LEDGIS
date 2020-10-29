@@ -396,10 +396,10 @@ BOOST_FIXTURE_TEST_CASE(action_receipt_tests, TESTER) { try {
       BOOST_CHECK_EQUAL( m.begin()->second, base_test_auth_seq_num + 4 );
    } );
 
-   set_code( config::system_account_name, contracts::eosio_bios_wasm() );
+   set_code( config::system_account_name, contracts::led_bios_wasm() );
 
-   set_code( N(test), contracts::eosio_bios_wasm() );
-   set_abi( N(test), contracts::eosio_bios_abi().data() );
+   set_code( N(test), contracts::led_bios_wasm() );
+   set_abi( N(test), contracts::led_bios_abi().data() );
 	set_code( N(test), contracts::payloadless_wasm() );
 
    call_doit_and_check( N(test), N(test), [&]( const transaction_trace_ptr& res ) {
@@ -1446,7 +1446,7 @@ BOOST_FIXTURE_TEST_CASE(deferred_transaction_tests, TESTER) { try {
 
       // If the deferred tx receiver == this tx receiver, the authorization checking would originally be bypassed.
       // But not anymore. With the RESTRICT_ACTION_TO_SELF protocol feature activated, it should now objectively
-      // fail because testapi@additional permission is not unilaterally satisfied by testapi@eosio.code.
+      // fail because testapi@additional permission is not unilaterally satisfied by testapi@led.code.
       dtt_action dtt_act3;
       dtt_act3.deferred_account = N(testapi).to_uint64_t();
       dtt_act3.permission_name = N(additional).to_uint64_t();
@@ -2322,7 +2322,7 @@ BOOST_FIXTURE_TEST_CASE(permission_usage_tests, TESTER) { try {
 
    push_action(config::system_account_name, linkauth::get_name(), N(bob), fc::mutable_variant_object()
            ("account", "bob")
-           ("code", "eosio")
+           ("code", "led")
            ("type", "reqauth")
            ("requirement", "perm1")
    );

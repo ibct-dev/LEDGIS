@@ -1,12 +1,12 @@
 ## Goal
 
-Transfer token created by eosio.token contract
+Transfer token created by led.token contract
 
 ## Before you begin
 
 * Install the currently supported version of `cleos`
 
-* You are going to transfer a token created by eosio.token contract and eosio.token contract has been deployed on the network which you are connected to
+* You are going to transfer a token created by led.token contract and led.token contract has been deployed on the network which you are connected to
 
 * Understand the following:
   * What is a transaction

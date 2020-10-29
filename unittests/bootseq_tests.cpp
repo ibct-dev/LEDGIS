@@ -66,8 +66,8 @@ std::vector<genesis_account> test_genesis( {
 class bootseq_tester : public TESTER {
 public:
    void deploy_contract( bool call_init = true ) {
-      set_code( config::system_account_name, contracts::eosio_system_wasm() );
-      set_abi( config::system_account_name, contracts::eosio_system_abi().data() );
+      set_code( config::system_account_name, contracts::led_system_wasm() );
+      set_abi( config::system_account_name, contracts::led_system_abi().data() );
       if( call_init ) {
          base_tester::push_action(config::system_account_name, N(init),
                                   config::system_account_name,  mutable_variant_object()
@@ -163,7 +163,7 @@ public:
     }
 
     asset get_balance( const account_name& act ) {
-         return get_currency_balance(N(eosio.token), symbol(CORE_SYMBOL), act);
+         return get_currency_balance(N(led.token), symbol(CORE_SYMBOL), act);
     }
 
     void set_code_abi(const account_name& account, const vector<uint8_t>& wasm, const char* abi, const private_key_type* signer = nullptr) {
@@ -188,39 +188,39 @@ BOOST_AUTO_TEST_SUITE(bootseq_tests)
 BOOST_FIXTURE_TEST_CASE( bootseq_test, bootseq_tester ) {
     try {
 
-        // Create eosio.msig and eosio.token
-        create_accounts({N(eosio.msig), N(eosio.token), N(eosio.ram), N(eosio.ramfee), N(eosio.stake), N(eosio.vpay), N(eosio.bpay), N(eosio.saving) });
+        // Create led.msig and led.token
+        create_accounts({N(led.msig), N(led.token), N(led.ram), N(led.ramfee), N(led.stake), N(led.vpay), N(led.bpay), N(led.saving) });
         // Set code for the following accounts:
-        //  - eosio (code: eosio.bios) (already set by tester constructor)
-        //  - eosio.msig (code: eosio.msig)
-        //  - eosio.token (code: eosio.token)
-        // set_code_abi(N(eosio.msig), contracts::eosio_msig_wasm(), contracts::eosio_msig_abi().data());//, &eosio_active_pk);
-        // set_code_abi(N(eosio.token), contracts::eosio_token_wasm(), contracts::eosio_token_abi().data()); //, &eosio_active_pk);
+        //  - eosio (code: led.bios) (already set by tester constructor)
+        //  - led.msig (code: led.msig)
+        //  - led.token (code: led.token)
+        // set_code_abi(N(led.msig), contracts::led_msig_wasm(), contracts::led_msig_abi().data());//, &eosio_active_pk);
+        // set_code_abi(N(led.token), contracts::led_token_wasm(), contracts::led_token_abi().data()); //, &eosio_active_pk);
 
-        set_code_abi(N(eosio.msig),
-                     contracts::eosio_msig_wasm(),
-                     contracts::eosio_msig_abi().data());//, &eosio_active_pk);
-        set_code_abi(N(eosio.token),
-                     contracts::eosio_token_wasm(),
-                     contracts::eosio_token_abi().data()); //, &eosio_active_pk);
+        set_code_abi(N(led.msig),
+                     contracts::led_msig_wasm(),
+                     contracts::led_msig_abi().data());//, &eosio_active_pk);
+        set_code_abi(N(led.token),
+                     contracts::led_token_wasm(),
+                     contracts::led_token_abi().data()); //, &eosio_active_pk);
 
-        // Set privileged for eosio.msig and eosio.token
-        set_privileged(N(eosio.msig));
-        set_privileged(N(eosio.token));
+        // Set privileged for led.msig and led.token
+        set_privileged(N(led.msig));
+        set_privileged(N(led.token));
 
-        // Verify eosio.msig and eosio.token is privileged
-        const auto& eosio_msig_acc = get<account_metadata_object, by_name>(N(eosio.msig));
-        BOOST_TEST(eosio_msig_acc.is_privileged() == true);
-        const auto& eosio_token_acc = get<account_metadata_object, by_name>(N(eosio.token));
-        BOOST_TEST(eosio_token_acc.is_privileged() == true);
+        // Verify led.msig and led.token is privileged
+        const auto& led_msig_acc = get<account_metadata_object, by_name>(N(led.msig));
+        BOOST_TEST(led_msig_acc.is_privileged() == true);
+        const auto& led_token_acc = get<account_metadata_object, by_name>(N(led.token));
+        BOOST_TEST(led_token_acc.is_privileged() == true);
 
 
-        // Create SYS tokens in eosio.token, set its manager as eosio
+        // Create SYS tokens in led.token, set its manager as eosio
         auto max_supply = core_from_string("10000000000.0000"); /// 1x larger than 1B initial tokens
         auto initial_supply = core_from_string("1000000000.0000"); /// 1x larger than 1B initial tokens
-        create_currency(N(eosio.token), config::system_account_name, max_supply);
-        // Issue the genesis supply of 1 billion SYS tokens to eosio.system
-        issue(N(eosio.token), config::system_account_name, config::system_account_name, initial_supply);
+        create_currency(N(led.token), config::system_account_name, max_supply);
+        // Issue the genesis supply of 1 billion SYS tokens to led.system
+        issue(N(led.token), config::system_account_name, config::system_account_name, initial_supply);
 
         auto actual = get_balance(config::system_account_name);
         BOOST_REQUIRE_EQUAL(initial_supply, actual);
@@ -242,7 +242,7 @@ BOOST_FIXTURE_TEST_CASE( bootseq_test, bootseq_tester ) {
            auto r = buyram(config::system_account_name, a.aname, asset(ram));
            BOOST_REQUIRE( !r->except_ptr );
 
-           r = delegate_bandwidth(N(eosio.stake), a.aname, asset(net), asset(cpu));
+           r = delegate_bandwidth(N(led.stake), a.aname, asset(net), asset(cpu));
            BOOST_REQUIRE( !r->except_ptr );
         }
 
@@ -282,7 +282,7 @@ BOOST_FIXTURE_TEST_CASE( bootseq_test, bootseq_tester ) {
         produce_blocks_for_n_rounds(2); // 2 rounds since new producer schedule is set when the first block of next round is irreversible
         auto active_schedule = control->head_block_state()->active_schedule;
         BOOST_TEST(active_schedule.producers.size() == 1u);
-        BOOST_TEST(active_schedule.producers.front().producer_name == name("eosio"));
+        BOOST_TEST(active_schedule.producers.front().producer_name == name("led"));
 
         // Spend some time so the producer pay pool is filled by the inflation rate
         produce_min_num_of_blocks_to_spend_time_wo_inactive_prod(fc::seconds(30 * 24 * 3600)); // 30 days

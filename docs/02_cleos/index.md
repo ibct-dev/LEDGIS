@@ -52,7 +52,7 @@ Subcommands:
   push                        Push arbitrary transactions to the blockchain
   multisig                    Multisig contract commands
   wrap                        Wrap contract commands
-  system                      Send eosio.system contract action to the blockchain.
+  system                      Send led.system contract action to the blockchain.
 ```
 
 ### Cleos Subcommands
