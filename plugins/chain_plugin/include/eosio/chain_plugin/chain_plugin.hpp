@@ -371,6 +371,32 @@ public:
 
    get_producers_result get_producers( const get_producers_params& params )const;
 
+   struct get_interiors_params {
+      bool        json = false;
+      string      lower_bound;
+      uint32_t    limit = 50;
+   };
+
+   struct get_interiors_result {
+      vector<fc::variant> rows; ///< one row per item, either encoded as hex string or JSON object
+      string              more; ///< fill lower_bound with this value to fetch more rows
+   };
+
+   get_interiors_result get_interiors( const get_interiors_params& params )const;
+
+   struct get_frontiers_params {
+      bool        json = false;
+      string      lower_bound;
+      uint32_t    limit = 50;
+   };
+
+   struct get_frontiers_result {
+      vector<fc::variant> rows; ///< one row per item, either encoded as hex string or JSON object
+      string              more; ///< fill lower_bound with this value to fetch more rows
+   };
+
+   get_frontiers_result get_frontiers( const get_frontiers_params& params )const;
+
    struct get_producer_schedule_params {
    };
 
@@ -788,6 +814,11 @@ FC_REFLECT( eosio::chain_apis::read_only::get_currency_stats_result, (supply)(ma
 
 FC_REFLECT( eosio::chain_apis::read_only::get_producers_params, (json)(lower_bound)(limit) )
 FC_REFLECT( eosio::chain_apis::read_only::get_producers_result, (rows)(total_producer_vote_weight)(more) );
+FC_REFLECT( eosio::chain_apis::read_only::get_interiors_params, (json)(lower_bound)(limit) )
+FC_REFLECT( eosio::chain_apis::read_only::get_interiors_result, (rows)(more) );
+FC_REFLECT( eosio::chain_apis::read_only::get_frontiers_params, (json)(lower_bound)(limit) )
+FC_REFLECT( eosio::chain_apis::read_only::get_frontiers_result, (rows)(more) );
+
 
 FC_REFLECT_EMPTY( eosio::chain_apis::read_only::get_producer_schedule_params )
 FC_REFLECT( eosio::chain_apis::read_only::get_producer_schedule_result, (active)(pending)(proposed) );
