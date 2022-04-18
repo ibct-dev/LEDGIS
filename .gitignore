@@ -23,6 +23,7 @@ Makefile
 compile_commands.json
 moc_*
 *.moc
+.clangd/
 
 genesis.json
 hardfork.hpp
@@ -77,6 +78,7 @@ witness_node_data_dir
 Testing/*
 build.tar.gz
 build/*
+build
 build-debug/*
 
 etc/eosio/node_*
