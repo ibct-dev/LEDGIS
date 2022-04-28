@@ -3,18 +3,18 @@ set -eo pipefail
 
 VARIANT=$1
 
-VERSION_NO_SUFFIX="@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@"
-VERSION_SUFFIX="@VERSION_SUFFIX@"
-VERSION="@VERSION_FULL@"
+VERSION_NO_SUFFIX="2.1.0"
+VERSION_SUFFIX=""
+VERSION="2.1.0"
 
 # Using CMAKE_BINARY_DIR uses an absolute path and will break cross-vm building/download/make functionality
 BUILD_DIR="../../build"
 
-VENDOR="@VENDOR@"
-PROJECT="@PROJECT_NAME@"
-DESC="@DESC@"
-URL="@URL@"
-EMAIL="@EMAIL@"
+VENDOR="ibct"
+PROJECT="LEDGIS"
+DESC="LEDGIS - The Most Powerful Infrastructure for Decentralized Applications"
+URL="ledgis.io"
+EMAIL="ibct@ibct.kr"
 
 export BUILD_DIR
 export VERSION_NO_SUFFIX

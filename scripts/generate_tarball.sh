@@ -15,8 +15,8 @@ cp -R "${BUILD_DIR}"/bin/* ${EOS_PREFIX}/bin
 cp -R "${BUILD_DIR}"/licenses/ledgis/* ${EOS_PREFIX}/licenses
 
 # install bios and boot contracts
-cp -R "${BUILD_DIR}"/contracts/contracts/ledgis.bios/ledgis.bios.* ${EOS_PREFIX}/etc/ledgis/contracts
-cp -R "${BUILD_DIR}"/contracts/contracts/ledgis.boot/ledgis.boot.* ${EOS_PREFIX}/etc/ledgis/contracts
+cp -R "${BUILD_DIR}"/contracts/contracts/led.bios/led.bios.* ${EOS_PREFIX}/etc/ledgis/contracts
+cp -R "${BUILD_DIR}"/contracts/contracts/led.boot/led.boot.* ${EOS_PREFIX}/etc/ledgis/contracts
 
 for f in $(ls "${BUILD_DIR}/bin/"); do
     bn=$(basename "$f")
